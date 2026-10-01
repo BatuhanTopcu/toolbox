@@ -1,4 +1,4 @@
-# Analysis agent plugin
+# ![Analysis agent plugin](assets/header.png)
 
 Research a technical question, analyse a proposed change, audit a repository, and implement selected outcomes with evidence saved alongside the project. Four skills share one artifact workflow and common references.
 
