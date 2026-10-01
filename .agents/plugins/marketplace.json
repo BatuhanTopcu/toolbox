@@ -1,0 +1,20 @@
+{
+  "name": "analysis-agent-plugin-marketplace",
+  "interface": {
+    "displayName": "analysis-agent-plugin plugins"
+  },
+  "plugins": [
+    {
+      "name": "analysis-agent-plugin",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

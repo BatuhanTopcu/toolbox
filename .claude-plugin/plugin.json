@@ -1,0 +1,12 @@
+{
+  "name": "analysis-agent-plugin",
+  "version": "0.0.1",
+  "description": "Evidence-backed research, change analysis, improvement audits, and implementation from durable repository artifacts.",
+  "author": {
+    "name": "Yusuf Batuhan Topçu"
+  },
+  "license": "MIT",
+  "skills": [
+    "./skills/"
+  ]
+}

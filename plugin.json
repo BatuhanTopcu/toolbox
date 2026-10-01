@@ -1,0 +1,8 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "analysis-agent-plugin",
+  "version": "0.0.1",
+  "description": "Evidence-backed research, change analysis, improvement audits, and implementation from durable repository artifacts.",
+  "author": { "name": "Yusuf Batuhan Topçu" },
+  "license": "MIT"
+}

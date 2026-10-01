@@ -1,0 +1,15 @@
+{
+  "name": "analysis-agent-plugin-marketplace",
+  "owner": {
+    "name": "Yusuf Batuhan Topçu"
+  },
+  "metadata": {
+    "description": "Evidence-backed research, change analysis, improvement audits, and implementation from durable repository artifacts."
+  },
+  "plugins": [
+    {
+      "name": "analysis-agent-plugin",
+      "source": "."
+    }
+  ]
+}

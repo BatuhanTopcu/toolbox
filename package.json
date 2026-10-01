@@ -1,0 +1,27 @@
+{
+  "name": "analysis-agent-plugin",
+  "version": "0.0.1",
+  "description": "Evidence-backed research, change analysis, improvement audits, and implementation from durable repository artifacts.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=24.15"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "evaluate": "node scripts/evaluate.mjs",
+    "validate": "pnpm build && pnpm check"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "yaml": "2.9.0"
+  },
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  }
+}
