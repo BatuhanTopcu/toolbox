@@ -7,18 +7,18 @@ const json = (value) => JSON.stringify(value, null, 2) + '\n';
 
 export async function generatedFiles() {
   const manifest = JSON.parse(await readFile(join(root, 'plugin.json'), 'utf8'));
-  const { name, version, description, author, license } = manifest;
-  const identity = { name, version, description, author, license };
-  const catalog = `${name}-marketplace`;
+  const { name, version, description, author, homepage, repository, license } = manifest;
+  const identity = { name, version, description, author, homepage, repository, license };
+  const catalog = 'batu';
   return new Map(Object.entries({
     '.agents/plugins/marketplace.json': {
       name: catalog,
-      interface: { displayName: `${name} plugins` },
+      interface: { displayName: 'Batu' },
       plugins: [{ name, source: { source: 'local', path: './' }, policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' }, category: 'Productivity' }],
     },
     '.claude-plugin/marketplace.json': { name: catalog, owner: author, metadata: { description }, plugins: [{ name, source: '.' }] },
     '.claude-plugin/plugin.json': { ...identity, skills: ['./skills/'] },
-    '.cursor-plugin/plugin.json': { ...identity, displayName: name, skills: './skills/' },
+    '.cursor-plugin/plugin.json': { ...identity, displayName: 'Toolbox', logo: 'assets/logo.png', skills: './skills/' },
   }).map(([path, value]) => [path, json(value)]));
 }
 

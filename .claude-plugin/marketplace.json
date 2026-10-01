@@ -1,5 +1,5 @@
 {
-  "name": "analysis-agent-plugin-marketplace",
+  "name": "batu",
   "owner": {
     "name": "Yusuf Batuhan Topçu"
   },
@@ -8,7 +8,7 @@
   },
   "plugins": [
     {
-      "name": "analysis-agent-plugin",
+      "name": "toolbox",
       "source": "."
     }
   ]

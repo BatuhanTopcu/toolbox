@@ -1,11 +1,11 @@
 {
-  "name": "analysis-agent-plugin-marketplace",
+  "name": "batu",
   "interface": {
-    "displayName": "analysis-agent-plugin plugins"
+    "displayName": "Batu"
   },
   "plugins": [
     {
-      "name": "analysis-agent-plugin",
+      "name": "toolbox",
       "source": {
         "source": "local",
         "path": "./"

@@ -42,7 +42,9 @@ const readJson = async (path) => JSON.parse(await readFile(join(root, path), 'ut
 const manifest = await readJson('plugin.json');
 const validateManifest = new Ajv({ strict: false }).compile(await readJson('schemas/plugin.schema.json'));
 assert(validateManifest(manifest), JSON.stringify(validateManifest.errors));
-assert(!manifest.extensions, 'This package has no native extensions');
+assert.deepEqual(manifest.extensions, {
+  'com.openai': { interface: { displayName: 'Toolbox', composerIcon: './assets/logo.png', logo: './assets/logo.png', logoDark: './assets/logo-dark.png' } },
+});
 for (const [path, expected] of await generatedFiles()) assert.equal(await readFile(join(root, path), 'utf8'), expected, `${path} is stale; run pnpm build`);
 const pkg = await readJson('package.json');
 for (const key of ['name', 'version', 'description', 'license']) assert.equal(pkg[key], manifest[key], `package.json ${key} is stale`);
@@ -50,6 +52,13 @@ assert.deepEqual(pkg.pi, { skills: ['./skills'] });
 assert.deepEqual((await readdir(join(root, 'skills'))).sort(), ['analyse', 'implement', 'improve', 'research']);
 const markdownFiles = [join(root, 'README.md')];
 const resourceBoundary = await realpath(root);
+const branding = manifest.extensions['com.openai'].interface;
+for (const asset of [branding.composerIcon, branding.logo, branding.logoDark, (await readJson('.cursor-plugin/plugin.json')).logo]) {
+  const path = resolve(root, asset);
+  contained(resolve(root), path);
+  contained(resourceBoundary, await realpath(path));
+  assert((await readFile(path)).length, `Empty branding asset: ${asset}`);
+}
 for (const directory of ['skills', 'shared']) {
   contained(resourceBoundary, await realpath(join(root, directory)));
   for (const entry of await readdir(join(root, directory), { recursive: true, withFileTypes: true })) {
@@ -77,7 +86,7 @@ for (const path of ['shared/scripts/artifact-tool.ts', ...['analysis', 'improvem
   assert((await readFile(join(root, path), 'utf8')).length, `Empty resource: ${path}`);
 }
 
-const temporary = await mkdtemp(join(tmpdir(), 'analysis-plugin-check-'));
+const temporary = await mkdtemp(join(tmpdir(), 'toolbox-check-'));
 try {
   const project = join(temporary, 'project');
   await mkdir(project);

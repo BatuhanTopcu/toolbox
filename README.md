@@ -1,10 +1,10 @@
-# ![Analysis agent plugin](assets/header.png)
+# ![Toolbox](assets/header.png)
 
 Research a technical question, analyse a proposed change, audit a repository, and implement selected outcomes with evidence saved alongside the project. Four skills share one artifact workflow and common references.
 
 ## Install from GitHub
 
-Choose your client below. These instructions install from [BatuhanTopcu/analysis-agent-plugin](https://github.com/BatuhanTopcu/analysis-agent-plugin); no contributor setup is needed. The published `main` branch currently contains development version **0.0.1**. There is no release tag yet.
+Choose your client below. These instructions install from [BatuhanTopcu/toolbox](https://github.com/BatuhanTopcu/toolbox); no contributor setup is needed. The published `main` branch currently contains development version **0.0.1**. There is no release tag yet.
 
 Have your client and Git installed, then install [Bun](https://bun.sh/docs/installation) **1.4.0 or newer** and make it available on the agent's PATH. Bun runs the artifact helper; 1.4.0 is verified. Check it with:
 
@@ -19,8 +19,8 @@ Choose [Codex](#codex), [Claude Code](#claude-code), [Cursor](#cursor), [pi](#pi
 Run in your terminal:
 
 ```sh
-codex plugin marketplace add https://github.com/BatuhanTopcu/analysis-agent-plugin.git --ref main
-codex plugin add analysis-agent-plugin@analysis-agent-plugin-marketplace
+codex plugin marketplace add https://github.com/BatuhanTopcu/toolbox.git --ref main
+codex plugin add toolbox@batu
 ```
 
 Open a new Codex session in the repository you want to work on. Confirm that `analyse`, `research`, `improve`, and `implement` are available, then try:
@@ -29,21 +29,21 @@ Open a new Codex session in the repository you want to work on. Confirm that `an
 $research explain how this repository handles failed requests
 ```
 
-The install commands were checked against Codex CLI 0.159.0. If your CLI has no `plugin` command, update the client first.
+Command syntax was checked with Codex CLI 0.150.1. If your CLI has no `plugin` command, update the client first.
 
 ### Claude Code
 
 Run in your terminal to install for your user across projects:
 
 ```sh
-claude plugin marketplace add BatuhanTopcu/analysis-agent-plugin --scope user
-claude plugin install analysis-agent-plugin@analysis-agent-plugin-marketplace --scope user
+claude plugin marketplace add BatuhanTopcu/toolbox --scope user
+claude plugin install toolbox@batu --scope user
 ```
 
 Start Claude Code in your target repository, or enter `/reload-plugins` in an existing session. Confirm the four namespaced skills, then try:
 
 ```text
-/analysis-agent-plugin:research explain how this repository handles failed requests
+/toolbox:research explain how this repository handles failed requests
 ```
 
 See [Claude Code's installation guide](https://code.claude.com/docs/en/plugins/install) for installation scopes and plugin management.
@@ -53,7 +53,7 @@ See [Claude Code's installation guide](https://code.claude.com/docs/en/plugins/i
 For Cursor's direct GitHub import, enter this in Agent chat:
 
 ```text
-/add-plugin https://github.com/BatuhanTopcu/analysis-agent-plugin
+/add-plugin https://github.com/BatuhanTopcu/toolbox
 ```
 
 Open **Customize** and confirm the four skills are available. Invoke a skill from the chat's skill picker, or ask the agent to use `research` to explain how the repository handles failed requests.
@@ -65,7 +65,7 @@ Cursor support describes this command, but also reports that GitHub-only imports
 Run in your terminal:
 
 ```sh
-pi install https://github.com/BatuhanTopcu/analysis-agent-plugin.git
+pi install https://github.com/BatuhanTopcu/toolbox.git
 ```
 
 Restart pi in your target repository, or enter `/reload`, then try:
@@ -82,14 +82,14 @@ OpenCode V2 loads native skills from configured directories. Clone the complete 
 
 ```sh
 mkdir -p "$HOME/.local/share"
-git clone https://github.com/BatuhanTopcu/analysis-agent-plugin.git \
-  "$HOME/.local/share/analysis-agent-plugin"
+git clone https://github.com/BatuhanTopcu/toolbox.git \
+  "$HOME/.local/share/toolbox"
 ```
 
 From the repository you want to work on, register its skills:
 
 ```sh
-bun "$HOME/.local/share/analysis-agent-plugin/scripts/configure.mjs" \
+bun "$HOME/.local/share/toolbox/scripts/configure.mjs" \
   opencode --project "$PWD"
 ```
 
@@ -116,7 +116,7 @@ $analyse assess moving this service to streaming responses using that research
 $implement .artifacts/analyse/change/streaming-responses/ANALYSIS.md
 ```
 
-For an audit, use `$improve audit the payment module for concrete reliability improvements`, then select the findings you want `$implement` to carry out. In Claude Code, replace `$analyse` with `/analysis-agent-plugin:analyse`; in pi, use `/skill:analyse`. The other skill names follow the same pattern.
+For an audit, use `$improve audit the payment module for concrete reliability improvements`, then select the findings you want `$implement` to carry out. In Claude Code, replace `$analyse` with `/toolbox:analyse`; in pi, use `/skill:analyse`. The other skill names follow the same pattern.
 
 If the analysis is absent from the conversation, invoke `implement` without a target. It lists available artifacts with their status and asks which artifact and scope to implement. It does not automatically select the latest artifact or execute every finding.
 
@@ -127,8 +127,8 @@ Analysis and audits create task files only when requested; research creates none
 For Codex, refresh the marketplace snapshot and reinstall from it:
 
 ```sh
-codex plugin marketplace upgrade analysis-agent-plugin-marketplace
-codex plugin add analysis-agent-plugin@analysis-agent-plugin-marketplace
+codex plugin marketplace upgrade batu
+codex plugin add toolbox@batu
 ```
 
 Open a new session and confirm the skills. The second command installs the package again from the refreshed source; see the [Codex installation implementation](https://github.com/openai/codex/blob/444da310e108da16aaeb18fd790b0ac464f08aca/codex-rs/core-plugins/src/manager.rs#L2245).
@@ -136,8 +136,8 @@ Open a new session and confirm the skills. The second command installs the packa
 For Claude Code, refresh the marketplace and installed plugin:
 
 ```sh
-claude plugin marketplace update analysis-agent-plugin-marketplace
-claude plugin update analysis-agent-plugin@analysis-agent-plugin-marketplace --scope user
+claude plugin marketplace update batu
+claude plugin update toolbox@batu --scope user
 ```
 
 Then restart Claude Code or enter `/reload-plugins`. Custom marketplaces do not enable auto-update by default. An unchanged manifest version can cause Claude's copied installation to skip an update even when Git has new commits. Local-directory previews load in place. See [Claude's update guide](https://code.claude.com/docs/en/plugins/install#keep-plugins-updated) and [version rules](https://code.claude.com/docs/en/plugins/loading#versions-and-updates).
@@ -145,7 +145,7 @@ Then restart Claude Code or enter `/reload-plugins`. Custom marketplaces do not 
 For pi:
 
 ```sh
-pi update https://github.com/BatuhanTopcu/analysis-agent-plugin.git
+pi update https://github.com/BatuhanTopcu/toolbox.git
 ```
 
 Then restart pi or enter `/reload`.
@@ -153,7 +153,7 @@ Then restart pi or enter `/reload`.
 For OpenCode's checkout:
 
 ```sh
-git -C "$HOME/.local/share/analysis-agent-plugin" pull --ff-only
+git -C "$HOME/.local/share/toolbox" pull --ff-only
 ```
 
 Restart OpenCode after pulling. For Cursor, use your team marketplace's refresh controls; direct GitHub imports have the update limitation described [above](#cursor). Local Cursor checkouts can be pulled with Git and loaded with **Developer: Reload Window**.
@@ -172,14 +172,14 @@ grep -qxF '.artifacts/' "$ignore_file" || printf '\n.artifacts/\n' >> "$ignore_f
 
 Git ignore rules do not affect files already tracked. Artifacts remain on disk for review and later implementation.
 
-The skills normally run the artifact helper themselves. To inspect or create artifacts manually, replace `/absolute/path/analysis-agent-plugin` with the complete installed package path and run from your target repository:
+The skills normally run the artifact helper themselves. To inspect or create artifacts manually, replace `/absolute/path/toolbox` with the complete installed package path and run from your target repository:
 
 ```sh
-bun /absolute/path/analysis-agent-plugin/shared/scripts/artifact-tool.ts list \
+bun /absolute/path/toolbox/shared/scripts/artifact-tool.ts list \
   --repo "$PWD" --json
-bun /absolute/path/analysis-agent-plugin/shared/scripts/artifact-tool.ts init \
+bun /absolute/path/toolbox/shared/scripts/artifact-tool.ts init \
   --repo "$PWD" --mode change --name streaming-responses
-bun /absolute/path/analysis-agent-plugin/shared/scripts/artifact-tool.ts validate \
+bun /absolute/path/toolbox/shared/scripts/artifact-tool.ts validate \
   "$PWD/.artifacts/analyse/change/streaming-responses"
 ```
 
@@ -190,8 +190,8 @@ Modes are `change`, `improve`, and `research`. `add-task <artifact-dir> --title 
 Clone the repository when developing or previewing local changes:
 
 ```sh
-git clone https://github.com/BatuhanTopcu/analysis-agent-plugin.git
-cd analysis-agent-plugin
+git clone https://github.com/BatuhanTopcu/toolbox.git
+cd toolbox
 ```
 
 For a session-only Claude Code preview:
@@ -200,14 +200,14 @@ For a session-only Claude Code preview:
 claude --plugin-dir "$PWD"
 ```
 
-For a Codex preview, use `codex plugin marketplace add "$PWD"` as the marketplace source, then install `analysis-agent-plugin@analysis-agent-plugin-marketplace`. Use one source for that marketplace name at a time.
+For a Codex preview, use `codex plugin marketplace add "$PWD"` as the marketplace source, then install `toolbox@batu`. Use one source for that marketplace name at a time.
 
 For Cursor, clone the complete repository into its local plugin directory:
 
 ```sh
 mkdir -p "$HOME/.cursor/plugins/local"
-git clone https://github.com/BatuhanTopcu/analysis-agent-plugin.git \
-  "$HOME/.cursor/plugins/local/analysis-agent-plugin"
+git clone https://github.com/BatuhanTopcu/toolbox.git \
+  "$HOME/.cursor/plugins/local/toolbox"
 ```
 
 Restart Cursor or run **Developer: Reload Window**, then confirm the skills in Customize. Organization policy may require **Allow Local Plugin Imports**. External symlinks are skipped, and an installed marketplace plugin with the same name takes precedence. See [Cursor's local plugin instructions](https://cursor.com/docs/plugins#test-plugins-locally).

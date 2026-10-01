@@ -12,8 +12,8 @@ Before changing skill instructions, copy the complete package (excluding
 current package using fresh sessions and the same prompts:
 
 ```sh
-node scripts/evaluate.mjs --run --baseline /absolute/snapshot/analysis-agent-plugin
-node scripts/evaluate.mjs --run --case resume --baseline /absolute/snapshot/analysis-agent-plugin
+node scripts/evaluate.mjs --run --baseline /absolute/snapshot/toolbox
+node scripts/evaluate.mjs --run --case resume --baseline /absolute/snapshot/toolbox
 ```
 
 Use `--case` to select a bounded case, `--plugin` to select the current package,

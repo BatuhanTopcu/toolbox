@@ -72,7 +72,7 @@ if (args.includes('--grade')) {
 } else {
   const plugin = resolve(option('--plugin', root));
   const baseline = option('--baseline');
-  const workspace = await mkdtemp(join(tmpdir(), 'analysis-plugin-eval-'));
+  const workspace = await mkdtemp(join(tmpdir(), 'toolbox-eval-'));
   const config = join(workspace, 'claude-config');
   await mkdir(config);
   const env = { ...process.env, CLAUDE_CONFIG_DIR: config };

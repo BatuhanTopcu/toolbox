@@ -1,8 +1,20 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "analysis-agent-plugin",
+  "name": "toolbox",
   "version": "0.0.1",
   "description": "Evidence-backed research, change analysis, improvement audits, and implementation from durable repository artifacts.",
   "author": { "name": "Yusuf Batuhan Topçu" },
-  "license": "MIT"
+  "homepage": "https://github.com/BatuhanTopcu/toolbox",
+  "repository": "https://github.com/BatuhanTopcu/toolbox",
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Toolbox",
+        "composerIcon": "./assets/logo.png",
+        "logo": "./assets/logo.png",
+        "logoDark": "./assets/logo-dark.png"
+      }
+    }
+  }
 }

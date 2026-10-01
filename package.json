@@ -1,5 +1,5 @@
 {
-  "name": "analysis-agent-plugin",
+  "name": "toolbox",
   "version": "0.0.1",
   "description": "Evidence-backed research, change analysis, improvement audits, and implementation from durable repository artifacts.",
   "private": true,
