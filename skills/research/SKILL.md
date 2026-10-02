@@ -5,11 +5,12 @@ description: Investigate a bounded repository or technical question using primar
 
 # Research
 
-Create one `.artifacts/analyse/research/<slug>/RESEARCH.md`. Answer a bounded
+Create one `.artifacts/analyse/research/<slug>/RESEARCH.md` and its `RESEARCH.html` sibling. Answer a bounded
 question with source-backed conclusions and honest uncertainty. Write only
 inside the selected artifact; do not edit product code or create task files.
 
-Read [research workflow](../../shared/references/research-workflow.md) and
+Read [HTML reports](../../shared/references/html-reports.md),
+[research workflow](../../shared/references/research-workflow.md) and
 [research mode](../../shared/references/research-mode.md). Use `standard` depth
 unless the user requests `quick` or `deep`.
 
@@ -34,7 +35,7 @@ unless the user requests `quick` or `deep`.
 5. Complete the question, findings, conclusion, evidence, and uncertainty
    sections. Set `ready` only when the scoped conclusion is decision-complete;
    retain `draft` for a required unanswered claim. Update `updated_at`.
-6. Validate and re-open the document to check sources, links, freshness, and
+6. Render the reader HTML from final MD, validate the pair, and re-open both to check sources, links, freshness, and
    unsupported claims:
 
    ```sh
@@ -43,11 +44,12 @@ unless the user requests `quick` or `deep`.
 
 `<plugin-root>` is `../..` relative to the directory containing this SKILL.md.
 Resolve it from the loaded file's location, not the working directory. Use the
-complete plugin checkout and Bun with YAML/Markdown APIs; do not install runtimes
-automatically.
+complete plugin checkout, Bun with YAML/Markdown APIs, and public rendering
+dependencies in the loaded plugin root; do not install runtimes automatically.
 
 `reconcile <artifact-dir>` refreshes an existing research artifact using
 lifecycle and research-mode guidance. Research supplies evidence; execution
 requires a selected change recommendation or improvement finding.
 
-Report depth, document path, conclusion, remaining uncertainty, and validation.
+Run the shared browser checks. Report depth, Markdown/HTML paths, conclusion,
+remaining uncertainty, and actual validation/browser proof.

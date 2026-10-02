@@ -1,9 +1,11 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "toolbox",
-  "version": "0.0.1",
-  "description": "Evidence-backed research, change analysis, improvement audits, and implementation from durable repository artifacts.",
-  "author": { "name": "Yusuf Batuhan Topçu" },
+  "version": "0.0.2",
+  "description": "Evidence-backed research, change analysis, improvement audits, HTML explanations, and implementation from durable repository artifacts.",
+  "author": {
+    "name": "Yusuf Batuhan Topçu"
+  },
   "homepage": "https://github.com/BatuhanTopcu/toolbox",
   "repository": "https://github.com/BatuhanTopcu/toolbox",
   "license": "MIT",

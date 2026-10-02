@@ -5,11 +5,12 @@ description: Audit a repository or area for evidence-backed improvements and pri
 
 # Improve
 
-Create one `.artifacts/analyse/improve/<slug>/IMPROVEMENT.md`. Report findings
+Create one `.artifacts/analyse/improve/<slug>/IMPROVEMENT.md` and its `IMPROVEMENT.html` sibling. Report findings
 only after verifying the behavior and consequence. Write only inside the
 selected artifact; an audit does not authorize implementation or task publication.
 
-Read [research workflow](../../shared/references/research-workflow.md),
+Read [HTML reports](../../shared/references/html-reports.md),
+[research workflow](../../shared/references/research-workflow.md),
 [improve mode](../../shared/references/improve-mode.md), and the relevant areas
 of [audit playbook](../../shared/references/audit-playbook.md). Use `standard`
 depth unless the user requests `quick` or `deep`.
@@ -40,19 +41,19 @@ depth unless the user requests `quick` or `deep`.
    `add-task <artifact-dir> --title <title>` for selected findings only.
 7. Set `ready` only after required content and evidence are complete; record
    unresolved choices explicitly. Retain `draft` for unfinished required claims.
-   Update `updated_at`, then validate:
+   Update `updated_at`, render the reader HTML from the final MD, then validate the pair:
 
    ```sh
    bun <plugin-root>/shared/scripts/artifact-tool.ts validate <artifact-dir>
    ```
 
-8. Re-open the document and any tasks; check evidence, links, finding coverage,
+8. Re-open the Markdown, HTML, and any tasks; run the shared browser checks. Check evidence, links, finding coverage,
    dependencies, unresolved markers, and honest verification claims.
 
 `<plugin-root>` is `../..` relative to the directory containing this SKILL.md.
 Resolve it from the loaded file's location, not the working directory. Use the
-complete plugin checkout and Bun with YAML/Markdown APIs; do not install runtimes
-automatically.
+complete plugin checkout, Bun with YAML/Markdown APIs, and public rendering
+dependencies in the loaded plugin root; do not install runtimes automatically.
 
 ## Existing Artifacts
 
@@ -61,5 +62,5 @@ automatically.
 - `review-task <task-file>` tightens one improvement task using lifecycle and
   task-contract guidance, then validates the whole artifact.
 
-Report depth, document path, top findings, and validation. Include task paths
+Report depth, Markdown/HTML paths, top findings, and actual validation/browser proof. Include task paths
 and real dependency order only when tasks were requested and created.

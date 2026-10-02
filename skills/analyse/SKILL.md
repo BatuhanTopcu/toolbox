@@ -5,11 +5,12 @@ description: Create an evidence-backed analysis of a proposed repository change,
 
 # Analyse
 
-Create one `.artifacts/analyse/change/<slug>/ANALYSIS.md`. Research the actual
+Create one `.artifacts/analyse/change/<slug>/ANALYSIS.md` and its `ANALYSIS.html` sibling. Research the actual
 behavior and recommend the smallest complete change. Write only inside the
 selected artifact; do not implement product changes or publish tasks.
 
-Read [research workflow](../../shared/references/research-workflow.md) and
+Read [HTML reports](../../shared/references/html-reports.md),
+[research workflow](../../shared/references/research-workflow.md) and
 [change mode](../../shared/references/change-mode.md). Use `standard` depth
 unless the user requests `quick` or `deep`.
 
@@ -37,18 +38,19 @@ unless the user requests `quick` or `deep`.
    the requested slices using `add-task <artifact-dir> --title <title>`.
 6. Set `ready` only after required content and evidence are complete; record
    unresolved choices explicitly. Retain `draft` for unfinished required claims.
-   Update `updated_at`, then validate:
+   Update `updated_at`, render the reader HTML from the final MD, then validate the pair:
 
    ```sh
    bun <plugin-root>/shared/scripts/artifact-tool.ts validate <artifact-dir>
    ```
 
-7. Re-open the authored document and tasks. Check evidence, links, dependencies,
+7. Re-open the authored Markdown, HTML, and applicable tasks. Run the shared browser checks. Check evidence, links, dependencies,
    unresolved markers, and verification claims; validation checks structure.
 
 `<plugin-root>` is `../..` relative to the directory containing this SKILL.md.
 Resolve it from the loaded file's location, not the working directory. The
-complete plugin checkout and Bun with YAML/Markdown APIs are required; do not
+complete plugin checkout, Bun with YAML/Markdown APIs, and public rendering
+dependencies in the loaded plugin root are required; do not
 install runtimes automatically.
 
 ## Existing Artifacts
@@ -58,5 +60,5 @@ install runtimes automatically.
 - `review-task <task-file>` reviews one task belonging to a change artifact,
   using lifecycle and task-contract guidance. Validate the entire artifact.
 
-Report depth, main document path, recommendation, and validation result. Report
+Report depth, Markdown/HTML paths, recommendation, and validation result. Report
 task paths and real dependency order only when tasks were requested and created.

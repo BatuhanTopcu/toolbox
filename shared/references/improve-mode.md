@@ -50,4 +50,8 @@ authorize a task. Partial task coverage does not redefine the audit's findings.
 - Coverage/exclusions and meaningful verification limits are explicit.
 - Findings are supported, nonduplicative, consistently ranked, and actionable.
 - Dispositions and unresolved choices are clear.
-- Only the main document exists unless tasks were explicitly requested.
+- Only the main MD/HTML pair exists unless task MD was explicitly requested.
+
+Author the human view through [HTML reports](html-reports.md), keeping the same
+conclusions, evidence IDs, uncertainty, and scope with reader-friendly wording.
+Finalize Markdown before rendering; validate and reopen both files.

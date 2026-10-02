@@ -6,13 +6,14 @@ description: Implement a selected analysis recommendation, improvement finding, 
 # Implement
 
 Execute the user's selected outcome from a current analysis or improvement
-artifact. Read [implementation workflow](../../shared/references/implementation-workflow.md)
+artifact. Read [implementation workflow](../../shared/references/implementation-workflow.md),
+[HTML reports](../../shared/references/html-reports.md),
 and [lifecycle](../../shared/references/lifecycle.md). Research documents are
 supporting evidence, not execution targets.
 
 ## Resolve Missing Context
 
-Use an explicit artifact, main-document, or task path, or an unambiguous current
+Use an explicit artifact, main-document, paired HTML, or task path, or an unambiguous current
 conversation target with execution scope. Without one, resolve the current
 repository root and run:
 
@@ -31,7 +32,10 @@ or `ready` status; ready means authored, not unimplemented.
 
 1. Read the full main document, selected findings/tasks, prior implementation
    records, and current repository instructions. Validate the artifact before
-   editing product code:
+   editing product code. A paired HTML path resolves to its exact sibling MD;
+   explain HTML is never an execution target. Repair a verified stale/missing
+   companion only after `validate --content-only` confirms current-schema MD
+   and selected scope, then render and validate the whole pair:
 
    ```sh
    bun <plugin-root>/shared/scripts/artifact-tool.ts validate <artifact-dir>
@@ -51,7 +55,7 @@ or `ready` status; ready means authored, not unimplemented.
 4. Before a substantial taskless slice, record selected scope/current slice in
    the main document's existing `Implementation Verification`. Update actual
    changes, checks, blockers, and next action at boundaries or before a planned
-   interruption; keep current slice separate from main authoring status.
+   interruption; refresh the reader HTML after final MD updates; keep current slice separate from main authoring status.
    Follow actual dependencies, implement working end-to-end slices, and run
    repository-supported checks. Missing prerequisite outputs block dependents;
    a `wont-do` status does not satisfy a required output.
@@ -60,11 +64,14 @@ or `ready` status; ready means authored, not unimplemented.
    implemented, already satisfied, blocked, or remaining, with actual proof or
    its limit and next required action. Include revisions, actual checks,
    deviations, and remaining scope, preserving historical evidence. No new
-   tasks, IDs, table, or state files are required. Validate afterward.
+   tasks, IDs, table, or state files are required. Refresh HTML from final MD,
+   validate the pair, and compare reader claims/proof limits. Preserve progress
+   and the last complete HTML if rendering fails; report stale readiness.
 
 `<plugin-root>` is `../..` relative to the directory containing this SKILL.md.
 Resolve it from the loaded file's location, not the working directory. The
-complete plugin checkout and Bun with YAML/Markdown APIs are required; do not
+complete plugin checkout, Bun with YAML/Markdown APIs, and public rendering
+dependencies in the loaded plugin root are required; do not
 install runtimes automatically.
 
 Continue authorized work without routine approval between slices. Resolve

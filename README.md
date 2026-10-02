@@ -1,10 +1,10 @@
 # ![Toolbox](assets/header.png)
 
-Research a technical question, analyse a proposed change, audit a repository, and implement selected outcomes with evidence saved alongside the project. Four skills share one artifact workflow and common references.
+Research a technical question, analyse a proposed change, audit a repository, explain a topic in HTML, and implement selected outcomes with evidence saved alongside the project. Five skills share common references and a standard reader template.
 
 ## Install from GitHub
 
-Choose your client below. These instructions install from [BatuhanTopcu/toolbox](https://github.com/BatuhanTopcu/toolbox); no contributor setup is needed. The published `main` branch currently contains development version **0.0.1**. There is no release tag yet.
+Choose your client below. These instructions install from [BatuhanTopcu/toolbox](https://github.com/BatuhanTopcu/toolbox). The current release is **0.0.2**.
 
 Have your client and Git installed, then install [Bun](https://bun.sh/docs/installation) **1.4.0 or newer** and make it available on the agent's PATH. Bun runs the artifact helper; 1.4.0 is verified. Check it with:
 
@@ -13,6 +13,19 @@ bun --version
 ```
 
 Choose [Codex](#codex), [Claude Code](#claude-code), [Cursor](#cursor), [pi](#pi), or [OpenCode V2](#opencode-v2). Install the complete package: the skills need the sibling `shared/` directory, so copying individual skills or using a sparse checkout breaks their references.
+
+HTML generation requires **Node 24.15+** and **pnpm 10.33.0** for the one-time
+public dependency install. After installing the plugin, resolve its loaded root
+from the skill's location and run:
+
+```sh
+cd /absolute/path/to/loaded/toolbox
+pnpm install --frozen-lockfile
+```
+
+Install there, including after copied-package updates. Target repositories need
+no packages. No report build step or network access is needed to read generated
+HTML. Agents check setup and report the exact missing prerequisite.
 
 ### Codex
 
@@ -23,13 +36,13 @@ codex plugin marketplace add https://github.com/BatuhanTopcu/toolbox.git --ref m
 codex plugin add toolbox@batu
 ```
 
-Open a new Codex session in the repository you want to work on. Confirm that `analyse`, `research`, `improve`, and `implement` are available, then try:
+Open a new Codex session in the repository you want to work on. Confirm that `analyse`, `research`, `improve`, `explain`, and `implement` are available, then try:
 
 ```text
 $research explain how this repository handles failed requests
 ```
 
-Command syntax was checked with Codex CLI 0.150.1. If your CLI has no `plugin` command, update the client first.
+Command syntax was checked with Codex CLI 0.159.0. If your CLI has no `plugin` command, update the client first.
 
 ### Claude Code
 
@@ -40,7 +53,7 @@ claude plugin marketplace add BatuhanTopcu/toolbox --scope user
 claude plugin install toolbox@batu --scope user
 ```
 
-Start Claude Code in your target repository, or enter `/reload-plugins` in an existing session. Confirm the four namespaced skills, then try:
+Start Claude Code in your target repository, or enter `/reload-plugins` in an existing session. Confirm the five namespaced skills, then try:
 
 ```text
 /toolbox:research explain how this repository handles failed requests
@@ -56,7 +69,7 @@ For Cursor's direct GitHub import, enter this in Agent chat:
 /add-plugin https://github.com/BatuhanTopcu/toolbox
 ```
 
-Open **Customize** and confirm the four skills are available. Invoke a skill from the chat's skill picker, or ask the agent to use `research` to explain how the repository handles failed requests.
+Open **Customize** and confirm the five skills are available. Invoke a skill from the chat's skill picker, or ask the agent to use `explain` to save an HTML walkthrough of the repository.
 
 Cursor support describes this command, but also reports that GitHub-only imports can remain pinned to their initial commit even after reinstalling. See the [support reply](https://forum.cursor.com/t/plugin-update-version-management-how-are-installed-plugins-updated/166454/8). For team distribution, use **Dashboard → Plugins & MCPs → Team Marketplaces → Add Marketplace → Import from Repo**, then install from Customize; this requires Teams or Enterprise. See [Cursor's plugin guide](https://cursor.com/docs/plugins). A complete local checkout for development is documented [below](#local-preview-and-contributing).
 
@@ -74,7 +87,7 @@ Restart pi in your target repository, or enter `/reload`, then try:
 /skill:research explain how this repository handles failed requests
 ```
 
-Pi installs the complete Git package and discovers its four skills through `pi.skills`. Use the Node/npm installation required by pi; this plugin has no runtime npm dependencies and needs no pnpm or build step for installation. See pi's [package guide](https://github.com/earendil-works/pi/blob/v0.74.1/packages/coding-agent/docs/packages.md) and [skill commands](https://github.com/earendil-works/pi/blob/v0.74.1/packages/coding-agent/docs/skills.md).
+Pi installs the complete Git package and discovers its five skills through `pi.skills`. Install the public rendering dependencies in that loaded package using the setup above. See pi's [package guide](https://github.com/earendil-works/pi/blob/v0.74.1/packages/coding-agent/docs/packages.md) and [skill commands](https://github.com/earendil-works/pi/blob/v0.74.1/packages/coding-agent/docs/skills.md).
 
 ### OpenCode V2
 
@@ -99,14 +112,15 @@ OpenCode's remote skill sources are HTTP catalogs, so a GitHub repository URL ca
 
 ## Use the skills
 
-Run the agent in the target repository. Artifacts are written there under `.artifacts/analyse/`.
+Run the agent in the target repository. Analyses are written under `.artifacts/analyse/`; explanations under `.artifacts/explain/`.
 
 | Skill | Use it for | Saved result |
 | --- | --- | --- |
-| `research` | A bounded technical question and primary-source conclusion | `.artifacts/analyse/research/<slug>/RESEARCH.md` |
-| `analyse` | A proposed repository change and concrete recommendation | `.artifacts/analyse/change/<slug>/ANALYSIS.md` |
-| `improve` | An evidence-backed repository improvement audit | `.artifacts/analyse/improve/<slug>/IMPROVEMENT.md` |
-| `implement` | Execution of a selected analysis, audit finding, or task | Product changes and verification in the selected artifact |
+| `research` | A bounded technical question and primary-source conclusion | `.artifacts/analyse/research/<slug>/RESEARCH.md` + `RESEARCH.html` |
+| `analyse` | A proposed repository change and concrete recommendation | `.artifacts/analyse/change/<slug>/ANALYSIS.md` + `ANALYSIS.html` |
+| `improve` | An evidence-backed repository improvement audit | `.artifacts/analyse/improve/<slug>/IMPROVEMENT.md` + `IMPROVEMENT.html` |
+| `explain` | A readable saved explanation of a topic or codebase | `.artifacts/explain/<slug>/EXPLANATION.html` only |
+| `implement` | Execution of a selected analysis, audit finding, or task | Product changes, MD verification, and refreshed reader HTML |
 
 A typical Codex workflow is:
 
@@ -114,6 +128,7 @@ A typical Codex workflow is:
 $research compare the installed SDK's streaming APIs against its documentation
 $analyse assess moving this service to streaming responses using that research
 $implement .artifacts/analyse/change/streaming-responses/ANALYSIS.md
+$explain save an HTML walkthrough of this repository's request lifecycle
 ```
 
 For an audit, use `$improve audit the payment module for concrete reliability improvements`, then select the findings you want `$implement` to carry out. In Claude Code, replace `$analyse` with `/toolbox:analyse`; in pi, use `/skill:analyse`. The other skill names follow the same pattern.
@@ -121,6 +136,21 @@ For an audit, use `$improve audit the payment module for concrete reliability im
 If the analysis is absent from the conversation, invoke `implement` without a target. It lists available artifacts with their status and asks which artifact and scope to implement. It does not automatically select the latest artifact or execute every finding.
 
 Analysis and audits create task files only when requested; research creates none. A document marked `ready` is authored and may already contain completed work. Implementation checks the current repository, records a disposition and actual evidence or proof limit for every selected outcome, and keeps the current slice and next action in the same record so another session can resume.
+
+Markdown carries evidence and agent instructions. HTML teaches the same findings
+in six standard sections with public shadcn components, Light/Dark/System themes,
+and charts when useful. React finishes static rendering before bundling the final
+single file: text, tables, and chart SVGs are already visible with JavaScript
+disabled. Hydration adds theme controls and chart interactions. No company UI,
+private registry, external assets, or storage is required. See the
+[reader contract and build workflow](shared/references/html-reports.md).
+
+The chart component uses public shadcn's Recharts **2.15.4** registry version,
+with `react-is` aligned to React 19 and initial dimensions for SSR. The 2.x branch
+is inactive upstream. Recharts 3.8.0 and 3.10.1 were tested and produced no static SVG, matching
+the open [upstream SSR regression](https://github.com/recharts/recharts/issues/5997).
+Version selection is fixed; there is no runtime fallback. The runnable check
+requires full chart markup before any future dependency upgrade can pass.
 
 ## Update an installation
 
@@ -185,6 +215,14 @@ bun /absolute/path/toolbox/shared/scripts/artifact-tool.ts validate \
 
 Modes are `change`, `improve`, and `research`. `add-task <artifact-dir> --title <title>` is reserved for explicitly requested change/audit tasks. Inventory includes invalid artifacts with reasons and creates no index or cache. Unsupported historical layouts are reported without migration.
 
+The current contract is **schema 3**. Whole-artifact validation requires the
+canonical HTML sibling and checks its embedded SHA-256 against the final MD.
+Editing MD makes HTML stale until rebuilt. `validate --content-only` checks MD
+and tasks for authoring/verified presentation repair; it never establishes paired
+readiness. Old schemas remain unsupported. Explanations contain only their HTML
+and never enter implementation inventory. Failed rendering preserves MD progress
+and the last complete HTML, with readiness left invalid.
+
 ## Local preview and contributing
 
 Clone the repository when developing or previewing local changes:
@@ -200,7 +238,24 @@ For a session-only Claude Code preview:
 claude --plugin-dir "$PWD"
 ```
 
-For a Codex preview, use `codex plugin marketplace add "$PWD"` as the marketplace source, then install `toolbox@batu`. Use one source for that marketplace name at a time.
+For a Codex preview, replace the existing `batu` marketplace source, then install:
+
+```sh
+codex plugin remove toolbox@batu
+codex plugin marketplace remove batu
+codex plugin marketplace add "$PWD"
+codex plugin add toolbox@batu --json
+```
+
+Omit the removal commands if there is no existing installation. Codex copies
+the local package into its plugin cache; it does not load later checkout edits
+live. In the returned `installedPath`, run
+`pnpm install --force --frozen-lockfile` to rebuild dependency links omitted
+when Codex copies the checkout's `node_modules`. Then open a new chat
+(restart the app if its skill picker retains the old inventory).
+After further edits, run `pnpm validate`, remove/add `toolbox@batu` again, and
+repeat that dependency install in the new loaded copy. Keep the marketplace pointed at
+the checkout while testing; no GitHub publication is required.
 
 For Cursor, clone the complete repository into its local plugin directory:
 
@@ -222,18 +277,20 @@ pnpm validate
 Edit `plugin.json` for identity, `skills/` for entrypoints, and `shared/` for common resources. `pnpm validate` rebuilds native manifests and package metadata, then checks them. Commit generated files alongside their sources. `pnpm check` verifies freshness without rebuilding.
 
 ```text
-skills/{analyse,research,improve,implement}/SKILL.md
+skills/{analyse,research,improve,explain,implement}/SKILL.md
 shared/references/              Workflows and artifact contracts
 shared/scripts/artifact-tool.ts Bun artifact commands
-shared/assets/templates/       Main-document and opt-in task templates
+shared/scripts/html-report.ts   Full SSR HTML build/validation
+shared/html/                    Public UI, renderer, neutral themes, notices
+shared/assets/templates/       Main-document, reader, and opt-in task templates
 scripts/                       Native registrations, checks, and evaluations
 ```
 
-Publish the complete package, including hidden manifest directories, shared resources, lockfile, and LICENSE. Keep the current development version at `0.0.1`; create an immutable `v0.0.1` tag when making the first release. Bump `plugin.json` for subsequent releases so copied installations can detect updates. Keep entrypoints and shared resources from the same version together.
+Publish the complete package, including hidden manifest directories, shared resources, lockfile, and licenses. Current development version is `0.0.2`; create an immutable version tag when releasing. Bump `plugin.json` for subsequent releases so copied installations can detect updates. Keep entrypoints and shared resources from the same version together.
 
 ## Verification
 
-The [GitHub Actions check](.github/workflows/check.yml) installs pinned Node, pnpm, and Bun versions and runs `pnpm check` on pushes and pull requests. Checks cover schema validity, generated registrations, local resource links, OpenCode configuration preservation, artifact fixtures, path escapes, and relocation of the complete package into a separate repository.
+The [GitHub Actions check](.github/workflows/check.yml) installs pinned Node, pnpm, and Bun versions and runs `pnpm check` on pushes and pull requests. Checks cover five registrations, resource links, configuration preservation, schema-3 pairs, stale/missing HTML, historical schema rejection, path escapes, independently installed relocated rendering, complete SSR chart markup, embedded assets/notices, failure cleanup, and same-intent refresh.
 
 These checks establish package structure and helper behavior. Current native model behavior, implicit routing, outcome accounting, and resume compliance remain unverified: the latest Claude behavior runs were blocked by provider retries/authentication. Earlier pi and Claude sessions discovered all four skills, but discovery alone does not prove instruction compliance. Codex, Cursor, and OpenCode runtime behavior has not been tested for this derivative.
 
@@ -241,7 +298,7 @@ For reproducible behavior checks, follow the [evaluation guide](shared/reference
 
 ## Provenance and license
 
-The package derives from [agent-plugin-template](https://github.com/BatuhanTopcu/agent-plugin-template), retains its MIT notice in [LICENSE](LICENSE), and uses native skill discovery rather than a custom agent runtime.
+The package derives from [agent-plugin-template](https://github.com/BatuhanTopcu/agent-plugin-template), retains its MIT notice in [LICENSE](LICENSE), and uses native skill discovery rather than a custom agent runtime. Public shadcn components retain their [MIT notice](shared/html/SHADCN-LICENSE); every generated HTML embeds notices for bundled dependencies. The renderer is independently authored around the standalone SSR workflow; no private builder or company components are bundled.
 
 The workflows use original wording informed by [Matt Pocock's research](https://github.com/mattpocock/skills/blob/d81f3a183412e71a5b1e84ca21bc1a35eea03a60/skills/engineering/research/SKILL.md), [implementation](https://github.com/mattpocock/skills/blob/d81f3a183412e71a5b1e84ca21bc1a35eea03a60/skills/engineering/implement/SKILL.md), [task slicing](https://github.com/mattpocock/skills/blob/d81f3a183412e71a5b1e84ca21bc1a35eea03a60/skills/engineering/to-tickets/SKILL.md), and [shared skill mechanics](https://github.com/mattpocock/skills/blob/d81f3a183412e71a5b1e84ca21bc1a35eea03a60/skills/productivity/writing-for-agents/SKILL-MECHANICS.md); [shadcn's audit](https://github.com/shadcn/improve/blob/cac56e1ebd3c279aa9153616cfeac7b174ab90f9/skills/improve/SKILL.md) and [execution loop](https://github.com/shadcn/improve/blob/cac56e1ebd3c279aa9153616cfeac7b174ab90f9/skills/improve/references/closing-the-loop.md); and [Superpowers plan handoffs](https://github.com/obra/superpowers/blob/8ca22dba9a94f28898bbce59f2537ff4d87c747d/skills/writing-plans/SKILL.md) (new review on 2026-10-01; the original inspiration revision is unknown). They retain this package's local artifacts and explicit target selection rather than importing upstream task indexes, fixed models, or publication workflows.
 

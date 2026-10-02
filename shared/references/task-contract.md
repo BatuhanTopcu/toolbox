@@ -8,7 +8,7 @@ artifacts and must be executable without conversation history.
 
 ```yaml
 ---
-schema_version: 2
+schema_version: 3
 document_type: task
 id: "001"
 title: Example task

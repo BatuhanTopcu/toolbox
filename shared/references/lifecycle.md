@@ -1,6 +1,6 @@
 # Artifact Lifecycle
 
-Current artifacts use schema version 2 in
+Current artifacts use schema version 3 in
 `.artifacts/analyse/<change|improve|research>/<slug>/`. No historical layout is
 migrated automatically.
 
@@ -8,7 +8,7 @@ migrated automatically.
 
 ```yaml
 ---
-schema_version: 2
+schema_version: 3
 document_type: analysis
 mode: change
 slug: example
@@ -25,9 +25,14 @@ updated_at: 2026-01-01T00:00:00.000Z
 
 | Mode | document_type | Main document |
 | --- | --- | --- |
-| change | analysis | ANALYSIS.md |
-| improve | improvement | IMPROVEMENT.md |
-| research | research | RESEARCH.md |
+| change | analysis | ANALYSIS.md + ANALYSIS.html |
+| improve | improvement | IMPROVEMENT.md + IMPROVEMENT.html |
+| research | research | RESEARCH.md + RESEARCH.html |
+
+Each ready artifact requires its exact HTML sibling, built from the final MD bytes.
+Follow [HTML reports](html-reports.md) for the public renderer, reader template,
+SSR, freshness checks, and browser verification. Explain lives outside this
+inventory at `.artifacts/explain/<slug>/EXPLANATION.html`, with no MD or tasks.
 
 Optional numbered `tasks/` belong only to change/improve. Empty task directories,
 root README/research logs, task indexes/prompts, and extra delivery files are not
@@ -47,18 +52,19 @@ converting them.
    `draft` with the blocker for unfinished required claims.
 6. Add tasks only when explicitly requested; refresh existing tasks only when
    they are in scope. Research never has tasks.
-7. Validate and review evidence, links, unresolved markers, and actual blockers.
+7. Render/refresh the HTML after all main metadata/content updates, then validate
+   the whole pair and review both audiences, evidence, sources, and actual blockers.
 
 Reject an older schema/layout rather than silently convert it. Choose a new
 artifact only for a different requested intent, not to bypass an invalid input.
 
 ## Review One Task
 
-Confirm schema 2, owning change/improve artifact, ID/filename, and source. Read
+Confirm schema 3, owning change/improve artifact, ID/filename, and source. Read
 the main document and current cited sources. Tighten outcome, context/contracts,
 acceptance, verification, prerequisites, and stop conditions without expanding
 scope. Preserve truthful status/ID, update `updated_at`, and validate the entire
-artifact because dependencies affect other tasks.
+artifact because dependencies affect other tasks. Rebuild HTML if main MD changes.
 
 ## Status And Completion
 
@@ -97,3 +103,8 @@ For task work, also maintain the task's status and verification record. Preserve
 original evidence as the pre-change baseline and cite new evidence as current.
 Do not create delivery/index/log/state files. Validate after edits and report the
 remaining work honestly; document readiness alone cannot establish completion.
+Refresh HTML after every slice boundary/final/planned interruption. Preserve MD
+progress and the last complete HTML on rendering failure; report stale paired
+readiness. A verified stale/missing companion may be repaired from otherwise
+valid schema-3 MD on resume using `validate --content-only` before product edits.
+That check is not paired readiness and never permits old-schema execution.

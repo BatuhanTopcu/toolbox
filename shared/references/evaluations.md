@@ -26,8 +26,10 @@ The harness uses a temporary relocated complete package and Claude config, sessi
 sessions, user/project settings, hooks, automatic memory, Chrome, or MCP servers.
 OAuth/keychain authentication remains available where the native client supports
 it; an isolated authentication probe runs before each model call. No global
-installation or settings changes occur. Built-in tools remain available; the
-workspace-only system instruction is a behavioral boundary, not an OS sandbox. Native built-in or other ambient skills may still appear; retain and inspect the actual initialization inventory rather than assume only these four skills are available. Routing observations apply to that recorded surrounding inventory.
+installation or settings changes occur. Public renderer dependencies are installed
+offline from the local pnpm store in the relocated package before model calls;
+run the documented frozen install in the source checkout first. Built-in tools remain available; the
+workspace-only system instruction is a behavioral boundary, not an OS sandbox. Native built-in or other ambient skills may still appear; retain and inspect the actual initialization inventory rather than assume only these five skills are available. Routing observations apply to that recorded surrounding inventory.
 
 Each case saves its prompt, expected routing, baseline log and input observations, full native tool
 trace, final response, repository/artifacts, mechanical check results and a
@@ -37,7 +39,11 @@ model/configuration from native events, and repeat ambiguous cases before drawin
 routing conclusions.
 
 Use `tools.json` to locate attempted reads, then verify successful returned content/tool results in `transcript.jsonl`; an attempted or failed read alone does not prove loading. Do not rely on claims that a skill was used.
-Positive cases cover the four entrypoints. Near misses cover ordinary PR review,
+Positive cases cover the five entrypoints, including `--case saved-explanation`
+for HTML-only output. Initial ready documents use real SSR companions. Review
+MD/HTML claim agreement and actual browser/JS-disabled proof separately from
+structural freshness. Compare snapshots with the same schema-3 report contract;
+the harness does not migrate historical versions. Near misses cover ordinary PR review,
 direct fixes and chat-only explanations. Research-only execution must discover
 context without treating research as an execution contract. Implementation has
 two selected outcomes and one optional task, with required staging proof unavailable for the second; interrupt/resume is taskless.

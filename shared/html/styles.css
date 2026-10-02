@@ -1,0 +1,70 @@
+@custom-variant dark (&:is(.dark *));
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-lg: .75rem;
+}
+/* Public shadcn neutral tokens: https://ui.shadcn.com/docs/theming */
+:root {
+  --background: oklch(1 0 0); --foreground: oklch(.145 0 0);
+  --card: oklch(1 0 0); --card-foreground: oklch(.145 0 0);
+  --popover: oklch(1 0 0); --popover-foreground: oklch(.145 0 0);
+  --primary: oklch(.205 0 0); --primary-foreground: oklch(.985 0 0);
+  --secondary: oklch(.97 0 0); --secondary-foreground: oklch(.205 0 0);
+  --muted: oklch(.97 0 0); --muted-foreground: oklch(.556 0 0);
+  --accent: oklch(.97 0 0); --accent-foreground: oklch(.205 0 0);
+  --destructive: oklch(.577 .245 27.325); --border: oklch(.922 0 0);
+  --input: oklch(.922 0 0); --ring: oklch(.708 0 0);
+  --chart-1: oklch(.646 .222 41.116); --chart-2: oklch(.6 .118 184.704);
+  --chart-3: oklch(.398 .07 227.392); --chart-4: oklch(.828 .189 84.429); --chart-5: oklch(.769 .188 70.08);
+}
+.dark {
+  --background: oklch(.145 0 0); --foreground: oklch(.985 0 0);
+  --card: oklch(.205 0 0); --card-foreground: oklch(.985 0 0);
+  --popover: oklch(.205 0 0); --popover-foreground: oklch(.985 0 0);
+  --primary: oklch(.922 0 0); --primary-foreground: oklch(.205 0 0);
+  --secondary: oklch(.269 0 0); --secondary-foreground: oklch(.985 0 0);
+  --muted: oklch(.269 0 0); --muted-foreground: oklch(.708 0 0);
+  --accent: oklch(.269 0 0); --accent-foreground: oklch(.985 0 0);
+  --destructive: oklch(.704 .191 22.216); --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%); --ring: oklch(.556 0 0);
+  --chart-1: oklch(.488 .243 264.376); --chart-2: oklch(.696 .17 162.48);
+  --chart-3: oklch(.769 .188 70.08); --chart-4: oklch(.627 .265 303.9); --chart-5: oklch(.645 .246 16.439);
+}
+@layer base {
+  * { border-color: var(--border); }
+  body { margin: 0; background: var(--background); color: var(--foreground); font-family: ui-sans-serif, system-ui, sans-serif; }
+  a:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; }
+}
+.report-content a { text-decoration: underline; text-underline-offset: 3px; }
+.report-content p, .report-content li { overflow-wrap: anywhere; }
+.report-content ul, .report-content ol { padding-left: 1.5rem; }
+.report-content ul { list-style-type: disc; }
+.report-content ol { list-style-type: decimal; }
+.report-content pre { overflow-x: auto; padding: 1rem; border-radius: .5rem; background: var(--muted); font-size: .875rem; }
+.report-content :not(pre) > code { padding: .1rem .3rem; border-radius: .25rem; background: var(--muted); font-size: .875em; }
+.report-content h3 { font-weight: 600; font-size: 1.1rem; margin-top: 1.5rem; }
+.report-content [data-slot="table-row"] { transition: none; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+@media print { nav, select { display: none; } section { break-inside: avoid; } }

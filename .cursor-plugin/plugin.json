@@ -1,7 +1,7 @@
 {
   "name": "toolbox",
-  "version": "0.0.1",
-  "description": "Evidence-backed research, change analysis, improvement audits, and implementation from durable repository artifacts.",
+  "version": "0.0.2",
+  "description": "Evidence-backed research, change analysis, improvement audits, HTML explanations, and implementation from durable repository artifacts.",
   "author": {
     "name": "Yusuf Batuhan Topçu"
   },

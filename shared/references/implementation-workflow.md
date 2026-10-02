@@ -5,7 +5,8 @@ Research documents supply evidence, not authority or an implementation contract.
 
 ## Target And Scope
 
-Prefer an explicit artifact/main-document/task path. Otherwise use only an
+Prefer an explicit artifact/main-document/paired-HTML/task path. Resolve paired
+HTML to its exact sibling MD; explain is never an execution target. Otherwise use only an
 unambiguous conversation target with execution scope. Without one, list the
 current repository's artifacts through the shared helper and obtain selection
 before product edits. Offer even a sole candidate rather than silently choose
@@ -28,7 +29,10 @@ and [orchestration](orchestration.md) when tasks exist.
 Validate the selected artifact, then read the full main document, selected
 findings/tasks, prerequisites, prior implementation records, and repository
 instructions. Do not execute a draft, invalid, or superseded target. It needs
-authoring/reconciliation first; finish analysis then implement only when that
+authoring/reconciliation first. Exception: a verified stale/missing HTML
+companion may be repaired after `validate --content-only` confirms otherwise
+valid schema-3 MD and scope; render and fully validate before product edits.
+Do not repair old schemas or invalid claims implicitly. Finish analysis then implement only when that
 sequence is in the user's scope. Do not silently repair historical layouts.
 Follow [lifecycle](lifecycle.md) for artifact records.
 

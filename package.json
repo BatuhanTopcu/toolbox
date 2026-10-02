@@ -1,7 +1,7 @@
 {
   "name": "toolbox",
-  "version": "0.0.1",
-  "description": "Evidence-backed research, change analysis, improvement audits, and implementation from durable repository artifacts.",
+  "version": "0.0.2",
+  "description": "Evidence-backed research, change analysis, improvement audits, HTML explanations, and implementation from durable repository artifacts.",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -23,5 +23,20 @@
     "skills": [
       "./skills"
     ]
+  },
+  "dependencies": {
+    "@babel/parser": "8.0.4",
+    "@tailwindcss/cli": "4.3.2",
+    "clsx": "2.1.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "recharts": "2.15.4",
+    "tailwind-merge": "3.7.0",
+    "tailwindcss": "4.3.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "react-is": "19.2.7"
+    }
   }
 }

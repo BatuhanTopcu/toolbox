@@ -44,4 +44,8 @@ creating task files.
 - The chosen outcome follows from cited current evidence.
 - Facts, user decisions, assumptions, and unresolved questions are distinct.
 - Required contracts/failure behavior and real verification are decision-complete.
-- The artifact contains only its main document and explicitly requested tasks.
+- The artifact contains its exact main MD/HTML pair and explicitly requested task MD.
+
+Author the human view through [HTML reports](html-reports.md), keeping the same
+conclusions, evidence IDs, uncertainty, and scope with reader-friendly wording.
+Finalize Markdown before rendering; validate and reopen both files.

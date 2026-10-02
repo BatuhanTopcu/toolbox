@@ -7,6 +7,7 @@ import Ajv from 'ajv/dist/2020.js';
 import { parse, stringify } from 'yaml';
 import { generatedFiles, root } from './build.mjs';
 import { configure } from './configure.mjs';
+import { writeCompanion } from './report-fixture.mjs';
 
 function contained(base, target) {
   const path = relative(base, target);
@@ -49,7 +50,7 @@ for (const [path, expected] of await generatedFiles()) assert.equal(await readFi
 const pkg = await readJson('package.json');
 for (const key of ['name', 'version', 'description', 'license']) assert.equal(pkg[key], manifest[key], `package.json ${key} is stale`);
 assert.deepEqual(pkg.pi, { skills: ['./skills'] });
-assert.deepEqual((await readdir(join(root, 'skills'))).sort(), ['analyse', 'implement', 'improve', 'research']);
+assert.deepEqual((await readdir(join(root, 'skills'))).sort(), ['analyse', 'explain', 'implement', 'improve', 'research']);
 const markdownFiles = [join(root, 'README.md')];
 const resourceBoundary = await realpath(root);
 const branding = manifest.extensions['com.openai'].interface;
@@ -133,16 +134,18 @@ try {
   };
   const inspect = (path) => JSON.parse(helper(['validate', path, '--json']).stdout);
   const inventory = (repo) => JSON.parse(helper(['list', '--repo', repo, '--json']).stdout);
-  const author = async (file, updates = {}) => {
+  const author = async (file, updates = {}, plugin = root) => {
     const raw = await readFile(file, 'utf8');
     const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/.exec(raw);
     assert(match);
     const metadata = { ...parse(match[1]), status: 'ready', ...updates };
     const body = match[2].replace(/<!-- REQUIRED:[\s\S]*?-->/g, 'Verified fixture content.');
     await writeFile(file, `---\n${stringify(metadata).trimEnd()}\n---\n${body}`);
+    if (metadata.status === 'ready') await writeCompanion(plugin, file);
   };
   const copied = join(temporary, 'copied plugin');
-  await cp(root, copied, { recursive: true, filter: (path) => !['node_modules', '.git'].includes(basename(path)) });
+  await cp(root, copied, { recursive: true, filter: (path) => !['node_modules', '.git', '.artifacts'].includes(basename(path)) });
+  execFileSync('pnpm', ['install', '--offline', '--frozen-lockfile'], { cwd: copied, stdio: 'pipe' });
   await checkLocalLinks(copied, markdownFiles.map((file) => join(copied, relative(root, file))));
   const copiedTemplate = join(copied, 'shared/assets/templates/research.md');
   const marker = 'Copied-template relocation fixture.';
@@ -158,7 +161,7 @@ try {
   const copiedArtifact = copiedHelper(['init', '--repo', copiedProject, '--mode', 'research', '--name', 'relocation']).trim();
   const copiedDocument = join(copiedArtifact, 'RESEARCH.md');
   assert((await readFile(copiedDocument, 'utf8')).includes(marker), 'Relocated helper must use copied templates');
-  await author(copiedDocument);
+  await author(copiedDocument, {}, copied);
   assert(JSON.parse(copiedHelper(['validate', copiedArtifact, '--json'])).ok);
   assert.deepEqual(inventory(project), { artifacts: [], diagnostics: [] });
   assert.match(helper(['list', '--repo', join(temporary, 'missing'), '--json'], false).stderr, /REPOSITORY_UNREADABLE/);
@@ -177,6 +180,7 @@ try {
     tasks.push(file);
     await author(file, { status, depends_on: index ? ['001'] : [] });
   }
+  await writeCompanion(root, join(artifacts.change, 'ANALYSIS.md'));
   assert(inspect(artifacts.change).ok);
   await author(tasks[0], { status: 'done', depends_on: ['002'] });
   assert(JSON.parse(helper(['validate', artifacts.change, '--json'], false).stdout).diagnostics.some((item) => item.code === 'DEPENDENCY_CYCLE'));
@@ -193,6 +197,7 @@ try {
   assert.equal(listed.artifacts.length, 5);
   const row = listed.artifacts.find((item) => item.artifact === artifacts.change);
   assert(row.eligible && row.validation.ok && isAbsolute(row.path));
+  assert.equal(row.html_path, join(artifacts.change, 'ANALYSIS.html'));
   assert.equal(row.title, 'Change Fixture');
   assert.deepEqual(row.task_counts, { todo: 0, 'in-progress': 0, blocked: 0, done: 1, 'wont-do': 1 });
   for (const artifact of [draft, invalid, artifacts.improve, artifacts.research]) {
@@ -220,7 +225,25 @@ try {
   const captured = helper(['init', '--repo', unborn, '--mode', 'change', '--name', 'dirty']).stdout.trim();
   const metadata = parse((await readFile(join(captured, 'ANALYSIS.md'), 'utf8')).match(/^---\n([\s\S]*?)\n---/)[1]);
   assert.deepEqual(metadata.repository, { root: unborn, revision: 'none', dirty: true });
+
+  const researchMD = join(artifacts.research, 'RESEARCH.md');
+  const researchHTML = researchMD.replace(/\.md$/, '.html');
+  const oldMarkdown = await readFile(researchMD, 'utf8');
+  await writeFile(researchMD, oldMarkdown + '\nA new source fact.\n');
+  assert(JSON.parse(helper(['validate', artifacts.research, '--json'], false).stdout).diagnostics.some(item => item.code === 'HTML_STALE'));
+  assert(JSON.parse(helper(['validate', artifacts.research, '--content-only', '--json']).stdout).content_only);
+  await writeFile(researchMD, oldMarkdown);
+  const html = await readFile(researchHTML, 'utf8');
+  await rm(researchHTML);
+  assert(JSON.parse(helper(['validate', artifacts.research, '--json'], false).stdout).diagnostics.some(item => item.code === 'HTML_MISSING'));
+  await writeFile(researchHTML, html);
+  await writeFile(researchMD, oldMarkdown.replace('schema_version: 3', 'schema_version: 2'));
+  assert(JSON.parse(helper(['validate', artifacts.research, '--content-only', '--json'], false).stdout).diagnostics.some(item => item.code === 'SCHEMA_VERSION'));
+  await writeFile(researchMD, oldMarkdown);
+  const rendering = spawnSync('bun', [join(root, 'scripts/check-html.ts'), copied], { encoding: 'utf8', timeout: 65000 });
+  assert.equal(rendering.status, 0, rendering.stdout + rendering.stderr);
+  process.stdout.write(rendering.stdout);
 } finally {
   await rm(temporary, { recursive: true, force: true });
 }
-console.log('Validated native skill registrations, shared links, relocated resources, configuration preservation, and artifact fixtures.');
+console.log('Validated five skill registrations, shared links, independently installed relocated resources, configuration preservation, and paired artifacts.');

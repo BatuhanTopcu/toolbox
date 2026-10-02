@@ -15,6 +15,7 @@ import {
 } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { ReportError, validateReport } from "../html/contract.ts";
 
 type Mode = "change" | "improve" | "research";
 type Depth = "quick" | "standard" | "deep";
@@ -53,6 +54,7 @@ type ArtifactContext = {
 type ValidationResult = { ok: boolean; artifact: string; diagnostics: Diagnostic[] };
 type ArtifactRow = {
   path: string;
+  html_path: string;
   artifact: string;
   title: string;
   mode: Mode;
@@ -124,11 +126,12 @@ function usage(): string {
     "Usage:",
     "  bun shared/scripts/artifact-tool.ts init --repo <path> --mode <change|improve|research> --name <slug> [--depth <quick|standard|deep>]",
     "  bun shared/scripts/artifact-tool.ts add-task <artifact-dir> --title <title>",
-    "  bun shared/scripts/artifact-tool.ts validate <artifact-dir> [--json]",
+    "  bun shared/scripts/artifact-tool.ts validate <artifact-dir> [--content-only] [--json]",
     "  bun shared/scripts/artifact-tool.ts list --repo <path> [--json]",
     "  bun shared/scripts/artifact-tool.ts --help",
     "",
-    "init creates one main document. add-task creates tasks/ lazily for change/improve only.",
+    "init creates a draft main MD. Render its HTML sibling before whole-artifact validation.",
+    "--content-only checks MD/tasks and does not establish paired readiness. add-task creates tasks/ lazily.",
   ].join("\n");
 }
 
@@ -149,7 +152,7 @@ function parseArguments(args: string[]): {
     }
 
     const name = item.slice(2);
-    if (name === "json") {
+    if (name === "json" || name === "content-only") {
       options.set(name, true);
       continue;
     }
@@ -223,7 +226,7 @@ function withinRoot(target: string, root: string): boolean {
   return relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative);
 }
 
-async function assertRepositoryPath(target: string, repositoryRoot: string): Promise<void> {
+export async function assertRepositoryPath(target: string, repositoryRoot: string): Promise<void> {
   const root = path.resolve(repositoryRoot);
   const resolved = path.resolve(target);
   if (!withinRoot(resolved, root)) {
@@ -316,7 +319,7 @@ function parseDocument(raw: string, target: string): ParsedDocument {
   return { metadata, body: raw.slice(match[0].length), raw };
 }
 
-async function readDocument(target: string, repositoryRoot: string): Promise<ParsedDocument> {
+export async function readDocument(target: string, repositoryRoot: string): Promise<ParsedDocument> {
   await assertRepositoryPath(target, repositoryRoot);
   try {
     return parseDocument(await readFile(target, "utf8"), target);
@@ -352,7 +355,7 @@ function captureRevision(repo: string): { revision: string; dirty: boolean } {
   return { revision: revision.ok ? revision.output : "none", dirty: status.ok && status.output !== "" };
 }
 
-function canonicalLocation(artifactDirInput: string): {
+export function canonicalLocation(artifactDirInput: string): {
   artifactDir: string;
   repositoryRoot: string;
   mode: Mode;
@@ -435,7 +438,8 @@ async function loadArtifact(artifactDirInput: string): Promise<ArtifactContext> 
   await ensureDirectory(location.artifactDir);
 
   const sourceName = MODE_DOCUMENTS[location.mode].source;
-  const allowedRootEntries = new Set(location.mode === "research" ? [sourceName] : [sourceName, "tasks"]);
+  const htmlName = sourceName.replace(/\.md$/, ".html");
+  const allowedRootEntries = new Set(location.mode === "research" ? [sourceName, htmlName] : [sourceName, htmlName, "tasks"]);
   for (const entry of await readdir(location.artifactDir, { withFileTypes: true })) {
     await assertRepositoryPath(path.join(location.artifactDir, entry.name), location.repositoryRoot);
     if (allowedRootEntries.has(entry.name)) continue;
@@ -537,8 +541,8 @@ function validateDocumentMetadata(
   const source = context.sourceName;
   const expectedType = MODE_DOCUMENTS[context.mode].type;
 
-  if (metadata.schema_version !== 2) {
-    addDiagnostic(diagnostics, "SCHEMA_VERSION", source, "schema_version must equal 2.");
+  if (metadata.schema_version !== 3) {
+    addDiagnostic(diagnostics, "SCHEMA_VERSION", source, "schema_version must equal 3; older artifacts are unsupported.");
   }
   if (metadata.document_type !== expectedType || metadata.mode !== context.mode) {
     addDiagnostic(diagnostics, "DOCUMENT_MODE", source, "document_type and mode must match the path.");
@@ -578,8 +582,8 @@ function validateTasks(context: ArtifactContext, diagnostics: Diagnostic[]): voi
   for (const task of context.tasks) {
     const metadata = task.document.metadata;
     const relative = `tasks/${task.file}`;
-    if (metadata.schema_version !== 2 || metadata.document_type !== "task") {
-      addDiagnostic(diagnostics, "TASK_SCHEMA", relative, "Task schema_version must be 2 and document_type task.");
+    if (metadata.schema_version !== 3 || metadata.document_type !== "task") {
+      addDiagnostic(diagnostics, "TASK_SCHEMA", relative, "Task schema_version must be 3 and document_type task.");
     }
     if (String(metadata.id ?? "") !== task.id) {
       addDiagnostic(diagnostics, "TASK_ID_MISMATCH", relative, "Task id must match its filename.");
@@ -641,7 +645,7 @@ function validateTasks(context: ArtifactContext, diagnostics: Diagnostic[]): voi
   }
 }
 
-async function validateArtifact(artifactDir: string): Promise<ValidationResult> {
+export async function validateArtifact(artifactDir: string, includeHtml = true): Promise<ValidationResult> {
   const diagnostics: Diagnostic[] = [];
   let context: ArtifactContext;
   let sourceTemplate: string;
@@ -670,6 +674,16 @@ async function validateArtifact(artifactDir: string): Promise<ValidationResult> 
   validateTasks(context, diagnostics);
   for (const task of context.tasks) {
     validateBody(task.document, taskTemplate!, `tasks/${task.file}`, diagnostics);
+  }
+  if (includeHtml && context.source.metadata.schema_version === 3) {
+    const htmlName = context.sourceName.replace(/\.md$/, ".html");
+    try {
+      await assertRepositoryPath(path.join(context.artifactDir, htmlName), context.repositoryRoot);
+      await validateReport(path.join(context.artifactDir, htmlName), context.source);
+    } catch (error) {
+      addDiagnostic(diagnostics, error instanceof ReportError ? error.code : error instanceof ToolError ? error.code : "HTML_MISSING",
+        htmlName, error instanceof Error ? error.message : "Could not validate HTML companion.");
+    }
   }
   diagnostics.sort((left, right) => {
     const byPath = left.path.localeCompare(right.path);
@@ -764,6 +778,7 @@ async function inventory(options: Map<string, string | true>): Promise<{
       if (mode === "research") reasons.push("Research is supporting context, not an implementation target.");
       artifacts.push({
         path: sourcePath,
+        html_path: sourcePath.replace(/\.md$/, ".html"),
         artifact,
         title,
         mode,
@@ -827,7 +842,7 @@ async function initialize(options: Map<string, string | true>): Promise<string> 
   const now = new Date().toISOString();
   const sourceName = MODE_DOCUMENTS[mode].source;
   const metadata: JsonMap = {
-    schema_version: 2,
+    schema_version: 3,
     document_type: MODE_DOCUMENTS[mode].type,
     mode,
     slug,
@@ -858,8 +873,8 @@ async function addTask(
   if (context.mode === "research") {
     throw new ToolError("RESEARCH_TASKS_UNSUPPORTED", "Research artifacts do not support tasks.", context.sourcePath);
   }
-  if (context.source.metadata.schema_version !== 2) {
-    throw new ToolError("LEGACY_SCHEMA", "Only compact schema-version-2 artifacts support tasks.", context.sourcePath);
+  if (context.source.metadata.schema_version !== 3) {
+    throw new ToolError("LEGACY_SCHEMA", "Only schema-version-3 artifacts support tasks.", context.sourcePath);
   }
 
   const next = context.tasks.reduce((value, task) => Math.max(value, Number(task.id)), 0) + 1;
@@ -873,7 +888,7 @@ async function addTask(
   const target = path.join(tasksDir, `${id}-${taskSlug}.md`);
   const now = new Date().toISOString();
   const metadata: JsonMap = {
-    schema_version: 2,
+    schema_version: 3,
     document_type: "task",
     id,
     title,
@@ -944,8 +959,10 @@ async function main(): Promise<void> {
     if (parsed.positionals.length !== 1) {
       throw new ToolError("CLI_USAGE", "validate requires one artifact directory.");
     }
-    const result = await validateArtifact(parsed.positionals[0]);
-    printValidation(result, parsed.options.has("json"));
+    const contentOnly = parsed.options.has("content-only");
+    const result = await validateArtifact(parsed.positionals[0], !contentOnly);
+    if (contentOnly && !parsed.options.has("json")) console.log("CONTENT ONLY: HTML freshness/readiness is not checked.");
+    printValidation(contentOnly ? { ...result, content_only: true } : result, parsed.options.has("json"));
     if (!result.ok) process.exitCode = 1;
     return;
   }
@@ -959,7 +976,7 @@ async function main(): Promise<void> {
   throw new ToolError("CLI_USAGE", `Unknown command ${parsed.command}.\n\n${usage()}`);
 }
 
-main().catch((error) => {
+if (import.meta.main) main().catch((error) => {
   const known = error instanceof ToolError
     ? error
     : new ToolError("UNEXPECTED", String(error));

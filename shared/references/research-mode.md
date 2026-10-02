@@ -36,4 +36,8 @@ do not turn research automatically into an implementation plan or task set.
 - The bounded question is answered or its actual blocker is explicit.
 - Consequential conclusions cite direct primary/local evidence.
 - Freshness, inference, contradictions, and verification limits are visible.
-- Only RESEARCH.md exists; research artifacts never contain tasks.
+- Only RESEARCH.md and RESEARCH.html exist; research artifacts never contain tasks.
+
+Author the human view through [HTML reports](html-reports.md), keeping the same
+conclusions, evidence IDs, uncertainty, and scope with reader-friendly wording.
+Finalize Markdown before rendering; validate and reopen both files.

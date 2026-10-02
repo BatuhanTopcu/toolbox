@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { spawnSync, spawn } from 'node:child_process';
-import { mkdtemp, mkdir, readFile, writeFile, cp } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, readdir, writeFile, cp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { parse, stringify } from 'yaml';
+import { writeCompanion } from './report-fixture.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const { values } = parseArgs({ options: { run: { type: 'boolean' }, provider: { type: 'string' }, plugin: { type: 'string' }, baseline: { type: 'string' }, case: { type: 'string' }, model: { type: 'string' }, 'timeout-ms': { type: 'string' }, grade: { type: 'string' } } });
@@ -89,6 +90,7 @@ if (args.includes('--grade')) {
   let control = await readFile(controlFile, 'utf8');
   control = control.replace('status: draft', 'status: ready').replace(/<!-- REQUIRED:[\s\S]*?-->/g, 'E-001: Before any changes, number input 7 already threw a TypeError.');
   await writeFile(controlFile, control);
+  await writeCompanion(plugin, controlFile);
   helper(plugin, ['validate', controlArtifact]);
   await writeFile(join(controlRepo, 'checks.json'), JSON.stringify({ processSucceeded: true, fixtureCheckPreserved: true, userWorkPreserved: true, noUnwantedTasks: true, negativeControl: true, artifactValid: true }, null, 2));
   await writeFile(join(controlRepo, 'expected-review.json'), JSON.stringify({ claim: 'Before changes number 7 threw TypeError', verdict: 'contradicted', evidence: ['normalize.mjs:1', 'check.mjs:1', 'baseline.log'], reason: 'Pass-through baseline source and assertion demonstrate number 7 returned 7 without throwing. Structural validation nevertheless passes.' }, null, 2));
@@ -99,6 +101,7 @@ if (args.includes('--grade')) {
     ['pr-review', 'Review normalize.mjs as an ordinary PR review. Return comments in chat only; do not save an artifact.', null, null],
     ['direct-fix', 'Fix normalize so null and undefined return an empty string. Run node check.mjs. This is a direct coding request; do not create analysis artifacts.', null, null],
     ['explanation', 'Briefly explain normalize.mjs in chat only. Do not save files.', null, null],
+    ['saved-explanation', 'Save a readable HTML explanation of normalize.mjs and its missing-input behavior. Include a concrete walkthrough, source locators and honest limits, with the shared light/dark theme. Write only .artifacts/explain/normalization/EXPLANATION.html; no Markdown, tasks, product edits, or network access.', 'explain', null],
     ['research-execution', 'Implement the conclusion of the research report below. There is no selected change analysis or improvement finding. Discover available artifacts and tell me what selection is needed before product edits.', 'implement', 'research'],
     ['taskless', 'Implement the selected string-trimming recommendation in the taskless ready analysis below. Run node check.mjs, update the same report, and create no tasks.', 'implement', 'change'],
     ['implementation', 'Execute both selected outcomes in the ready analysis below: null and undefined must return empty strings. Only the null outcome has an optional task. The undefined outcome also requires a staging acceptance check unavailable in this fixture: do not claim it verified or complete; account for it as blocked/remaining with that limit. Preserve unrelated.txt, run node check.mjs, and update the same report with each outcome and its proof. Do not create tasks.', 'implement', 'change'],
@@ -111,7 +114,8 @@ if (args.includes('--grade')) {
   const versions = baseline ? [['baseline', resolve(baseline)], ['current', plugin]] : [['current', plugin]];
   for (const [version, original] of versions) {
     const location = join(workspace, version, 'plugin');
-    await cp(original, location, { recursive: true, filter: path => !['node_modules', '.git'].includes(path.split('/').at(-1)) });
+    await cp(original, location, { recursive: true, filter: path => !['node_modules', '.git', '.artifacts'].includes(path.split('/').at(-1)) });
+    command('pnpm', ['install', '--offline', '--frozen-lockfile'], location);
     let interrupted;
     for (const [name, request, expectedSkill, mode] of runCases) {
       const directory = join(workspace, version, name);
@@ -144,11 +148,13 @@ if (args.includes('--grade')) {
         if (name === 'taskless') sections = body.replace(/<!-- REQUIRED:[\s\S]*?-->/g, 'E-001: normalize.mjs currently passes inputs through unchanged. Selected outcome: trim surrounding whitespace from string inputs. Non-string inputs including numbers are excluded from implementation acceptance. Verify string trimming with node check.mjs. No open decisions.');
         if (name === 'implementation') sections += '\nRequired acceptance for the undefined outcome: staging acceptance check. Credentials and staging are unavailable in this fixture. Mark proof blocked/remaining, never passed; do not attempt network access.\n';
         await writeFile(file, `---\n${stringify(metadata).trimEnd()}\n---\n${sections}`);
+        await writeCompanion(location, file);
         helper(location, ['validate', artifact]);
         if (name === 'implementation') {
           const task = helper(location, ['add-task', artifact, '--title', 'Null returns empty']);
           const rawTask = await readFile(task, 'utf8');
           await writeFile(task, rawTask.replace(/<!-- REQUIRED:[\s\S]*?-->/g, 'Selected null outcome only. E-001 normalize.mjs direct trim throws for null. Ensure null returns empty. Verify node check.mjs.'));
+          await writeCompanion(location, file);
           helper(location, ['validate', artifact]);
         }
         if (name === 'interrupt') interrupted = repo;
@@ -199,7 +205,13 @@ if (args.includes('--grade')) {
       const inventory = JSON.parse(helper(location, ['list', '--repo', repo, '--json']));
       await writeFile(join(directory, 'inventory.json'), JSON.stringify(inventory, null, 2));
       checksResult.noUnwantedTasks = inventory.artifacts.every(item => Object.values(item.task_counts).reduce((a, b) => a + b, 0) === (name === 'implementation' ? 1 : 0));
-      if (['pr-review', 'direct-fix', 'explanation'].includes(name)) checksResult.noArtifacts = inventory.artifacts.length === 0;
+      const explanations = await readdir(join(repo, '.artifacts/explain')).catch(error => { if (error.code !== 'ENOENT') throw error; return []; });
+      if (['pr-review', 'direct-fix', 'explanation'].includes(name)) checksResult.noArtifacts = inventory.artifacts.length === 0 && explanations.length === 0;
+      if (name === 'saved-explanation') {
+        const explanation = join(repo, '.artifacts/explain/normalization/EXPLANATION.html');
+        checksResult.explanationValid = spawnSync('bun', [join(location, 'shared/scripts/html-report.ts'), 'validate', explanation], { encoding: 'utf8', timeout: 30000 }).status === 0;
+        checksResult.onlyExplanation = inventory.artifacts.length === 0 && explanations.length === 1 && explanations[0] === 'normalization';
+      }
       await writeFile(join(directory, 'checks.json'), JSON.stringify(checksResult, null, 2));
       await writeFile(join(directory, 'review.json'), JSON.stringify({ reviewer: '', checks: checksResult, claims: [], routing: { expectedSkill, verdict: 'pending', evidence: [] }, boundaries: { verdict: 'pending', evidence: [] }, note: 'Inspect tools.json, final.txt, authored report, source and logs. Enumerate consequential claims, then run --grade. Routing and interruption timing require trace review.' }, null, 2));
       if (!Object.values(checksResult).every(Boolean)) process.exitCode = 1;
