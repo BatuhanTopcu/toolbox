@@ -7,8 +7,8 @@ dependency dashboard, or separate research log is required.
 ## Creating Tasks
 
 1. Slice only the scope requested into independently verifiable outcomes.
-2. Repeat necessary evidence/contracts and cite the source recommendation or
-   finding; follow [task contract](task-contract.md).
+2. Repeat necessary evidence/contracts and cite the source recommendation,
+   plan step, or finding; follow [task contract](task-contract.md).
 3. Add `depends_on` only for required outputs/contracts, not filename order.
 4. Exclude deferred, rejected, speculative, unrequested, and undecided work.
 

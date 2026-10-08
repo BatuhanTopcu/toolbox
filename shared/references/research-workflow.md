@@ -1,6 +1,6 @@
 # Research Workflow
 
-Use this reference for investigation in analyse, research, and improve, and for
+Use this reference for investigation in analyse, plan, research, and improve, and for
 implementation preflight. Keep evidence in the selected main document; depth
 changes breadth, not the evidence bar.
 
@@ -18,7 +18,7 @@ changes breadth, not the evidence bar.
 5. State the desired outcome, success criteria, scope, exclusions, and material
    unanswered decisions. Choose `standard` depth unless quick/deep was requested.
 
-During analyse/research/improve, write only inside the selected artifact. Avoid
+During analyse/plan/research/improve, write only inside the selected artifact. Avoid
 installers, migrations, deployments, source-mutating generators/formatters, and
 commands that alter runtime state or external systems. Implementation edits are
 governed by [implementation workflow](implementation-workflow.md).
@@ -49,7 +49,9 @@ Compare options only for actual choices; an outcome that already works can be
 the recommendation. Do not turn an incidental smell into a requirement.
 
 An analysis/audit does its needed research inside its own main document. Do not
-create a second research artifact automatically. Delegate only independent
+create a second research artifact automatically. Planning grounds only decisions,
+steps, and acceptance needed for execution; follow [plan mode](plan-mode.md).
+Delegate only independent
 questions whose results can be verified; choose agents/tools from what is
 available rather than prescribing models or a fixed agent count.
 

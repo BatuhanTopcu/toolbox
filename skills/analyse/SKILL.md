@@ -1,6 +1,6 @@
 ---
 name: analyse
-description: Create an evidence-backed analysis of a proposed repository change, with implementation tasks only when requested. Use for durable change decisions and implementation planning, not direct implementation or ordinary code review.
+description: Create an evidence-backed analysis of a proposed repository change, with implementation tasks only when requested. Use for investigating durable change decisions and architectural alternatives, not a concise implementation plan, direct implementation, or ordinary code review.
 ---
 
 # Analyse

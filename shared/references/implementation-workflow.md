@@ -1,6 +1,7 @@
 # Implementation Workflow
 
-Execute selected change recommendations, improvement findings, or task outcomes.
+Execute selected implementation plans, change recommendations, improvement findings,
+or task outcomes.
 Research documents supply evidence, not authority or an implementation contract.
 
 ## Target And Scope
@@ -11,7 +12,12 @@ unambiguous conversation target with execution scope. Without one, list the
 current repository's artifacts through the shared helper and obtain selection
 before product edits. Offer even a sole candidate rather than silently choose
 it; show invalid/draft/superseded reasons and research as supporting context.
-An empty inventory needs a supplied analysis/task or a requested analysis first.
+An empty inventory needs a supplied plan/analysis/task or a requested plan/analysis first.
+
+Execute plans directly from their approach, named steps, acceptance, evidence,
+and open decisions. No conversion to an analysis, extra investigation artifact,
+or task generation is required. Reconcile only when material requirements or
+contracts have changed; incidental source changes do not require replanning.
 
 For an audit, identify selected finding IDs or an explicitly chosen delivery set.
 Do not include deferred, rejected, excluded, optional, or completed findings just
@@ -32,7 +38,7 @@ instructions. Do not execute a draft, invalid, or superseded target. It needs
 authoring/reconciliation first. Exception: a verified stale/missing HTML
 companion may be repaired after `validate --content-only` confirms otherwise
 valid schema-3 MD and scope; render and fully validate before product edits.
-Do not repair old schemas or invalid claims implicitly. Finish analysis then implement only when that
+Do not repair old schemas or invalid claims implicitly. Finish plan/analysis then implement only when that
 sequence is in the user's scope. Do not silently repair historical layouts.
 Follow [lifecycle](lifecycle.md) for artifact records.
 
@@ -64,9 +70,10 @@ Run existing focused checks and broaden only for affected contracts or unresolve
 failures. Record command, expected result, actual result, and proof limits.
 Distinguish the pre-change baseline from post-change observations; call behavior
 pre-existing or unchanged only with baseline evidence, and leave untested or
-out-of-scope behavior unverified. Do not add a test setup where none exists; use
-meaningful existing checks or a small runnable assertion for nontrivial changed
-logic. Review the resulting behavior
+out-of-scope behavior unverified. Match claimed baseline inputs to captured
+proof; post-change probes do not extend a limited baseline. Do not add a test
+setup where none exists; use meaningful existing checks or a small runnable
+assertion for nontrivial changed logic. Review the resulting behavior
 and diff against acceptance, independently when useful, and verify delegated
 claims against source.
 

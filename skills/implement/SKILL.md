@@ -1,11 +1,11 @@
 ---
 name: implement
-description: Implement a selected analysis recommendation, improvement finding, or task with current-source checks and verification. Discover available analysis artifacts when context is missing; use for executing these artifacts, not unrelated coding requests.
+description: Implement a selected implementation plan, analysis recommendation, improvement finding, or task with current-source checks and verification. Discover available repository artifacts when context is missing; use for executing these artifacts, not unrelated coding requests.
 ---
 
 # Implement
 
-Execute the user's selected outcome from a current analysis or improvement
+Execute the user's selected outcome from a current plan, analysis, or improvement
 artifact. Read [implementation workflow](../../shared/references/implementation-workflow.md),
 [HTML reports](../../shared/references/html-reports.md),
 and [lifecycle](../../shared/references/lifecycle.md). Research documents are
@@ -21,11 +21,11 @@ repository root and run:
 bun <plugin-root>/shared/scripts/artifact-tool.ts list --repo <repo-root> --json
 ```
 
-Show change/improve candidates with title, path, mode, authoring status,
+Show change/plan/improve candidates with title, path, mode, authoring status,
 updated date, validation result, and task counts. Show invalid/draft/superseded
 artifacts with reasons. Ask for target and scope before product edits, even if
 only one candidate exists. If none exist, report the empty inventory and ask
-for an analysis/task path or a change to analyse. Never select by age, filename,
+for a plan/analysis/task path or a change to plan/analyse. Never select by age, filename,
 or `ready` status; ready means authored, not unimplemented.
 
 ## Execute Selected Scope
@@ -40,6 +40,10 @@ or `ready` status; ready means authored, not unimplemented.
    ```sh
    bun <plugin-root>/shared/scripts/artifact-tool.ts validate <artifact-dir>
    ```
+
+   Execute a selected plan directly. Read its approach, named steps, acceptance,
+   evidence, and open decisions; no analysis conversion or task generation is
+   required. Reconcile only material contract drift before dependent work.
 
 2. Re-open current sources, inspect affected Git roots and dirty work, and
    verify consequential requirements and remaining work. Preserve existing

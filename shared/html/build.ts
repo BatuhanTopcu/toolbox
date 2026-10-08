@@ -52,7 +52,7 @@ export async function buildReport(input: string, output: string, options: { titl
       if (!validation.ok) throw new Error(JSON.stringify(validation.diagnostics));
       source = await readDocument(sourcePath, location.repositoryRoot);
       const md = source.metadata;
-      const heading = /^#\s+(.+)$/m.exec(source.body)?.[1].replace(/^(?:Analysis|Improvement Audit|Research):\s*/, "");
+      const heading = /^#\s+(.+)$/m.exec(source.body)?.[1].replace(/^(?:Analysis|Plan|Improvement Audit|Research):\s*/, "");
       metadata = { schema_version: 3, kind: location.kind, slug: location.slug, title: options.title ?? heading ?? location.slug,
         intent: options.intent ?? `Findings and conclusions for ${location.slug.replace(/-/g, " ")}.`, depth: md.depth,
         created_at: md.created_at, updated_at: md.updated_at, repository: md.repository, source_sha256: digest(source.raw) };

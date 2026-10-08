@@ -1,10 +1,10 @@
 # ![Toolbox](assets/header.png)
 
-Research a technical question, analyse a proposed change, audit a repository, explain a topic in HTML, and implement selected outcomes with evidence saved alongside the project. Five skills share common references and a standard reader template.
+Research a technical question, analyse a proposed change, plan its implementation, audit a repository, explain a topic in HTML, and implement selected outcomes with evidence saved alongside the project. Six skills share common references and a standard reader template.
 
 ## Install from GitHub
 
-Choose your client below. These instructions install from [BatuhanTopcu/toolbox](https://github.com/BatuhanTopcu/toolbox). The current release is **0.0.2**.
+Choose your client below. These instructions install from [BatuhanTopcu/toolbox](https://github.com/BatuhanTopcu/toolbox). The current release is **0.0.3**.
 
 Have your client and Git installed, then install [Bun](https://bun.sh/docs/installation) **1.4.0 or newer** and make it available on the agent's PATH. Bun runs the artifact helper; 1.4.0 is verified. Check it with:
 
@@ -36,7 +36,7 @@ codex plugin marketplace add https://github.com/BatuhanTopcu/toolbox.git --ref m
 codex plugin add toolbox@batu
 ```
 
-Open a new Codex session in the repository you want to work on. Confirm that `analyse`, `research`, `improve`, `explain`, and `implement` are available, then try:
+Open a new Codex session in the repository you want to work on. Confirm that `analyse`, `research`, `plan`, `improve`, `explain`, and `implement` are available, then try:
 
 ```text
 $research explain how this repository handles failed requests
@@ -53,7 +53,7 @@ claude plugin marketplace add BatuhanTopcu/toolbox --scope user
 claude plugin install toolbox@batu --scope user
 ```
 
-Start Claude Code in your target repository, or enter `/reload-plugins` in an existing session. Confirm the five namespaced skills, then try:
+Start Claude Code in your target repository, or enter `/reload-plugins` in an existing session. Confirm the six namespaced skills, then try:
 
 ```text
 /toolbox:research explain how this repository handles failed requests
@@ -69,7 +69,7 @@ For Cursor's direct GitHub import, enter this in Agent chat:
 /add-plugin https://github.com/BatuhanTopcu/toolbox
 ```
 
-Open **Customize** and confirm the five skills are available. Invoke a skill from the chat's skill picker, or ask the agent to use `explain` to save an HTML walkthrough of the repository.
+Open **Customize** and confirm the six skills are available. Invoke a skill from the chat's skill picker, or ask the agent to use `explain` to save an HTML walkthrough of the repository.
 
 Cursor support describes this command, but also reports that GitHub-only imports can remain pinned to their initial commit even after reinstalling. See the [support reply](https://forum.cursor.com/t/plugin-update-version-management-how-are-installed-plugins-updated/166454/8). For team distribution, use **Dashboard → Plugins & MCPs → Team Marketplaces → Add Marketplace → Import from Repo**, then install from Customize; this requires Teams or Enterprise. See [Cursor's plugin guide](https://cursor.com/docs/plugins). A complete local checkout for development is documented [below](#local-preview-and-contributing).
 
@@ -87,7 +87,7 @@ Restart pi in your target repository, or enter `/reload`, then try:
 /skill:research explain how this repository handles failed requests
 ```
 
-Pi installs the complete Git package and discovers its five skills through `pi.skills`. Install the public rendering dependencies in that loaded package using the setup above. See pi's [package guide](https://github.com/earendil-works/pi/blob/v0.74.1/packages/coding-agent/docs/packages.md) and [skill commands](https://github.com/earendil-works/pi/blob/v0.74.1/packages/coding-agent/docs/skills.md).
+Pi installs the complete Git package and discovers its six skills through `pi.skills`. Install the public rendering dependencies in that loaded package using the setup above. See pi's [package guide](https://github.com/earendil-works/pi/blob/v0.74.1/packages/coding-agent/docs/packages.md) and [skill commands](https://github.com/earendil-works/pi/blob/v0.74.1/packages/coding-agent/docs/skills.md).
 
 ### OpenCode V2
 
@@ -118,24 +118,30 @@ Run the agent in the target repository. Analyses are written under `.artifacts/a
 | --- | --- | --- |
 | `research` | A bounded technical question and primary-source conclusion | `.artifacts/analyse/research/<slug>/RESEARCH.md` + `RESEARCH.html` |
 | `analyse` | A proposed repository change and concrete recommendation | `.artifacts/analyse/change/<slug>/ANALYSIS.md` + `ANALYSIS.html` |
+| `plan` | A concise implementation plan grounded in the current repository | `.artifacts/analyse/plan/<slug>/PLAN.md` + `PLAN.html` |
 | `improve` | An evidence-backed repository improvement audit | `.artifacts/analyse/improve/<slug>/IMPROVEMENT.md` + `IMPROVEMENT.html` |
 | `explain` | A readable saved explanation of a topic or codebase | `.artifacts/explain/<slug>/EXPLANATION.html` only |
-| `implement` | Execution of a selected analysis, audit finding, or task | Product changes, MD verification, and refreshed reader HTML |
+| `implement` | Execution of a selected plan, analysis, audit finding, or task | Product changes, MD verification, and refreshed reader HTML |
 
 A typical Codex workflow is:
 
 ```text
 $research compare the installed SDK's streaming APIs against its documentation
 $analyse assess moving this service to streaming responses using that research
-$implement .artifacts/analyse/change/streaming-responses/ANALYSIS.md
+$plan create an implementation plan for the selected streaming recommendation
+$implement .artifacts/analyse/plan/streaming-responses/PLAN.md
 $explain save an HTML walkthrough of this repository's request lifecycle
 ```
 
 For an audit, use `$improve audit the payment module for concrete reliability improvements`, then select the findings you want `$implement` to carry out. In Claude Code, replace `$analyse` with `/toolbox:analyse`; in pi, use `/skill:analyse`. The other skill names follow the same pattern.
 
-If the analysis is absent from the conversation, invoke `implement` without a target. It lists available artifacts with their status and asks which artifact and scope to implement. It does not automatically select the latest artifact or execute every finding.
+Use `analyse` for a durable investigation of a change and its alternatives; use `plan` for concrete implementation steps and acceptance checks. Planning can start from a direct request or a selected analysis. Analyses remain directly executable, and ordinary coding requests need no planning artifact.
 
-Analysis and audits create task files only when requested; research creates none. A document marked `ready` is authored and may already contain completed work. Implementation checks the current repository, records a disposition and actual evidence or proof limit for every selected outcome, and keeps the current slice and next action in the same record so another session can resume.
+If the target is absent from the conversation, invoke `implement` without a target. It lists change, plan, and improvement artifacts with their status and asks which artifact and scope to implement. It does not automatically select the latest artifact or execute every finding. A selected plan directory, `PLAN.md`, exact `PLAN.html`, or optional task is accepted directly, without an analysis conversion.
+
+Analyses, plans, and audits create task files only when requested; research creates none. A document marked `ready` is authored and may already contain completed work. Plans stay draft while material execution decisions remain unresolved. Implementation checks the current repository, records a disposition and actual evidence or proof limit for every selected outcome, and keeps the current slice and next action in the same record so another session can resume.
+
+The `plan` skill obeys the active harness's permissions; it does not switch the host into native Plan mode. In a session that restricts repository writes, it uses the permitted conversational surface and reports the Toolbox pair as unsaved and unvalidated. In a write-capable session, a plan-only request ends after delivery. An explicit “plan then implement” request continues through `implement` after validating the saved pair, within the same authorization and host permissions.
 
 Markdown carries evidence and agent instructions. HTML teaches the same findings
 in six standard sections with public shadcn components, Light/Dark/System themes,
@@ -213,7 +219,7 @@ bun /absolute/path/toolbox/shared/scripts/artifact-tool.ts validate \
   "$PWD/.artifacts/analyse/change/streaming-responses"
 ```
 
-Modes are `change`, `improve`, and `research`. `add-task <artifact-dir> --title <title>` is reserved for explicitly requested change/audit tasks. Inventory includes invalid artifacts with reasons and creates no index or cache. Unsupported historical layouts are reported without migration.
+Modes are `change`, `plan`, `improve`, and `research`. `add-task <artifact-dir> --title <title>` is reserved for explicitly requested change/plan/audit tasks; plan tasks use `source: PLAN.md`. Inventory includes invalid artifacts with reasons and creates no index or cache. Unsupported historical layouts are reported without migration.
 
 The current contract is **schema 3**. Whole-artifact validation requires the
 canonical HTML sibling and checks its embedded SHA-256 against the final MD.
@@ -277,7 +283,7 @@ pnpm validate
 Edit `plugin.json` for identity, `skills/` for entrypoints, and `shared/` for common resources. `pnpm validate` rebuilds native manifests and package metadata, then checks them. Commit generated files alongside their sources. `pnpm check` verifies freshness without rebuilding.
 
 ```text
-skills/{analyse,research,improve,explain,implement}/SKILL.md
+skills/{analyse,research,plan,improve,explain,implement}/SKILL.md
 shared/references/              Workflows and artifact contracts
 shared/scripts/artifact-tool.ts Bun artifact commands
 shared/scripts/html-report.ts   Full SSR HTML build/validation
@@ -286,13 +292,13 @@ shared/assets/templates/       Main-document, reader, and opt-in task templates
 scripts/                       Native registrations, checks, and evaluations
 ```
 
-Publish the complete package, including hidden manifest directories, shared resources, lockfile, and licenses. Current development version is `0.0.2`; create an immutable version tag when releasing. Bump `plugin.json` for subsequent releases so copied installations can detect updates. Keep entrypoints and shared resources from the same version together.
+Publish the complete package, including hidden manifest directories, shared resources, lockfile, and licenses. Current development version is `0.0.3`; create an immutable version tag when releasing. Bump `plugin.json` for subsequent releases so copied installations can detect updates. Keep entrypoints and shared resources from the same version together.
 
 ## Verification
 
-The [GitHub Actions check](.github/workflows/check.yml) installs pinned Node, pnpm, and Bun versions and runs `pnpm check` on pushes and pull requests. Checks cover five registrations, resource links, configuration preservation, schema-3 pairs, stale/missing HTML, historical schema rejection, path escapes, independently installed relocated rendering, complete SSR chart markup, embedded assets/notices, failure cleanup, and same-intent refresh.
+The [GitHub Actions check](.github/workflows/check.yml) installs pinned Node, pnpm, and Bun versions and runs `pnpm check` on pushes and pull requests. Checks cover six registrations, resource links, configuration preservation, schema-3 pairs, plan sections/title/eligibility/optional tasks, stale/missing HTML, historical schema rejection, path escapes, independently installed relocated rendering, complete SSR chart markup, embedded assets/notices, failure cleanup, and same-intent refresh.
 
-These checks establish package structure and helper behavior. Current native model behavior, implicit routing, outcome accounting, and resume compliance remain unverified: the latest Claude behavior runs were blocked by provider retries/authentication. Earlier pi and Claude sessions discovered all four skills, but discovery alone does not prove instruction compliance. Codex, Cursor, and OpenCode runtime behavior has not been tested for this derivative.
+These checks establish package structure and helper behavior. Bounded Claude runs on 2026-10-08 discovered all six skills. The restricted Plan-mode case passed source/trace review with no writes and honest unsaved output. An explicit plan → implement run loaded both skills, validated before edits, preserved user work, passed acceptance, and refreshed the pair; it still failed semantic review for overstated baseline evidence. Implicit routing, concise output, and stop/resume compliance also failed in observed cases. These are known model behavior limits, not passing evaluations; the final instruction refinements have not been retested natively. Codex, Cursor, and OpenCode runtime behavior has not been tested for this derivative.
 
 For reproducible behavior checks, follow the [evaluation guide](shared/references/evaluations.md). `pnpm evaluate` prepares fixtures without model calls; `pnpm evaluate --run` executes them in temporary repositories using session-only plugins. Mechanical assertions and source-backed review of consequential claims are separate checks. Keep the before-change package for comparisons and retain failed-run evidence.
 
@@ -301,6 +307,8 @@ For reproducible behavior checks, follow the [evaluation guide](shared/reference
 The package derives from [agent-plugin-template](https://github.com/BatuhanTopcu/agent-plugin-template), retains its MIT notice in [LICENSE](LICENSE), and uses native skill discovery rather than a custom agent runtime. Public shadcn components retain their [MIT notice](shared/html/SHADCN-LICENSE); every generated HTML embeds notices for bundled dependencies. The renderer is independently authored around the standalone SSR workflow; no private builder or company components are bundled.
 
 The workflows use original wording informed by [Matt Pocock's research](https://github.com/mattpocock/skills/blob/d81f3a183412e71a5b1e84ca21bc1a35eea03a60/skills/engineering/research/SKILL.md), [implementation](https://github.com/mattpocock/skills/blob/d81f3a183412e71a5b1e84ca21bc1a35eea03a60/skills/engineering/implement/SKILL.md), [task slicing](https://github.com/mattpocock/skills/blob/d81f3a183412e71a5b1e84ca21bc1a35eea03a60/skills/engineering/to-tickets/SKILL.md), and [shared skill mechanics](https://github.com/mattpocock/skills/blob/d81f3a183412e71a5b1e84ca21bc1a35eea03a60/skills/productivity/writing-for-agents/SKILL-MECHANICS.md); [shadcn's audit](https://github.com/shadcn/improve/blob/cac56e1ebd3c279aa9153616cfeac7b174ab90f9/skills/improve/SKILL.md) and [execution loop](https://github.com/shadcn/improve/blob/cac56e1ebd3c279aa9153616cfeac7b174ab90f9/skills/improve/references/closing-the-loop.md); and [Superpowers plan handoffs](https://github.com/obra/superpowers/blob/8ca22dba9a94f28898bbce59f2537ff4d87c747d/skills/writing-plans/SKILL.md) (new review on 2026-10-01; the original inspiration revision is unknown). They retain this package's local artifacts and explicit target selection rather than importing upstream task indexes, fixed models, or publication workflows.
+
+Implementation planning also draws on [Codex’s decision-complete planning prompt](https://github.com/openai/codex/blob/3b6ab3471a2d4d994c9fad322fca749564bc05e0/codex-rs/collaboration-mode-templates/templates/plan.md) and the [archived ExecPlan cookbook](https://developers.openai.com/cookbook/articles/codex_exec_plans), reviewed on 2026-10-08. The new plan contract uses original wording, the existing schema-3 helper/reader, and each host’s actual permissions; these references add no runtime dependency or native Plan-mode override.
 
 Evaluation, outcome accounting, and resume improvements were informed by [Agent Skills evaluation guidance](https://github.com/agentskills/agentskills/blob/69ef37e9424c0a7ea9dd2293b559e43ec8176379/docs/skill-creation/evaluating-skills.mdx), [description evaluation](https://github.com/agentskills/agentskills/blob/69ef37e9424c0a7ea9dd2293b559e43ec8176379/docs/skill-creation/optimizing-descriptions.mdx), [Anthropic's claim grading](https://github.com/anthropics/skills/blob/8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4/skills/skill-creator/agents/grader.md), [Spec Kit coverage](https://github.com/github/spec-kit/blob/d2ddd910266ad14afe79c5414c88ee316aca6e9a/templates/commands/analyze.md), [GSD resume](https://github.com/gsd-build/get-shit-done/blob/bdcaab2c752d9a33a1a1ca9acf3a3c81fb991815/get-shit-done/workflows/resume-project.md), and [Superpowers execution records](https://github.com/obra/superpowers/blob/8ca22dba9a94f28898bbce59f2537ff4d87c747d/skills/executing-plans/SKILL.md), reviewed on 2026-10-01. These are design references, not runtime dependencies.
 

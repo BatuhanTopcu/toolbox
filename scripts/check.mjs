@@ -50,7 +50,7 @@ for (const [path, expected] of await generatedFiles()) assert.equal(await readFi
 const pkg = await readJson('package.json');
 for (const key of ['name', 'version', 'description', 'license']) assert.equal(pkg[key], manifest[key], `package.json ${key} is stale`);
 assert.deepEqual(pkg.pi, { skills: ['./skills'] });
-assert.deepEqual((await readdir(join(root, 'skills'))).sort(), ['analyse', 'explain', 'implement', 'improve', 'research']);
+assert.deepEqual((await readdir(join(root, 'skills'))).sort(), ['analyse', 'explain', 'implement', 'improve', 'plan', 'research']);
 const markdownFiles = [join(root, 'README.md')];
 const resourceBoundary = await realpath(root);
 const branding = manifest.extensions['com.openai'].interface;
@@ -82,7 +82,7 @@ for (const name of await readdir(join(root, 'skills'))) {
   assert(typeof metadata.description === 'string' && metadata.description.length && match[2].trim());
 }
 await checkLocalLinks(root, markdownFiles);
-for (const path of ['shared/scripts/artifact-tool.ts', ...['analysis', 'improvement', 'research', 'task'].map((name) => `shared/assets/templates/${name}.md`)]) {
+for (const path of ['shared/scripts/artifact-tool.ts', ...['analysis', 'plan', 'improvement', 'research', 'task'].map((name) => `shared/assets/templates/${name}.md`)]) {
   contained(await realpath(root), await realpath(join(root, path)));
   assert((await readFile(join(root, path), 'utf8')).length, `Empty resource: ${path}`);
 }
@@ -147,7 +147,7 @@ try {
   await cp(root, copied, { recursive: true, filter: (path) => !['node_modules', '.git', '.artifacts'].includes(basename(path)) });
   execFileSync('pnpm', ['install', '--offline', '--frozen-lockfile'], { cwd: copied, stdio: 'pipe' });
   await checkLocalLinks(copied, markdownFiles.map((file) => join(copied, relative(root, file))));
-  const copiedTemplate = join(copied, 'shared/assets/templates/research.md');
+  const copiedTemplate = join(copied, 'shared/assets/templates/plan.md');
   const marker = 'Copied-template relocation fixture.';
   await writeFile(copiedTemplate, `${await readFile(copiedTemplate, 'utf8')}\n${marker}\n`);
   const copiedProject = join(temporary, 'copied-project');
@@ -158,21 +158,57 @@ try {
     assert.equal(result.status, 0, `${args.join(' ')}\n${result.stdout}\n${result.stderr}`);
     return result.stdout;
   };
-  const copiedArtifact = copiedHelper(['init', '--repo', copiedProject, '--mode', 'research', '--name', 'relocation']).trim();
-  const copiedDocument = join(copiedArtifact, 'RESEARCH.md');
+  const copiedArtifact = copiedHelper(['init', '--repo', copiedProject, '--mode', 'plan', '--name', 'relocation']).trim();
+  const copiedDocument = join(copiedArtifact, 'PLAN.md');
   assert((await readFile(copiedDocument, 'utf8')).includes(marker), 'Relocated helper must use copied templates');
   await author(copiedDocument, {}, copied);
   assert(JSON.parse(copiedHelper(['validate', copiedArtifact, '--json'])).ok);
   assert.deepEqual(inventory(project), { artifacts: [], diagnostics: [] });
   assert.match(helper(['list', '--repo', join(temporary, 'missing'), '--json'], false).stderr, /REPOSITORY_UNREADABLE/);
   const artifacts = {};
-  for (const [mode, source] of [['change', 'ANALYSIS.md'], ['improve', 'IMPROVEMENT.md'], ['research', 'RESEARCH.md']]) {
+  for (const [mode, source] of [['change', 'ANALYSIS.md'], ['plan', 'PLAN.md'], ['improve', 'IMPROVEMENT.md'], ['research', 'RESEARCH.md']]) {
     const artifact = helper(['init', '--repo', project, '--mode', mode, '--name', `${mode}-fixture`]).stdout.trim();
     artifacts[mode] = artifact;
     assert.deepEqual(await readdir(artifact), [source]);
     await author(join(artifact, source));
     assert(inspect(artifact).ok);
   }
+  const planMD = join(artifacts.plan, 'PLAN.md');
+  const planHTML = join(artifacts.plan, 'PLAN.html');
+  const plan = await readFile(planMD, 'utf8');
+  const planHTMLBytes = await readFile(planHTML, 'utf8');
+  assert.match(plan, /document_type: plan\nmode: plan/);
+  assert.match(planHTMLBytes, /<title>Plan Fixture<\/title>/);
+  const planFailure = (code) => assert(JSON.parse(helper(['validate', artifacts.plan, '--json'], false).stdout).diagnostics.some(item => item.code === code));
+  await writeFile(planMD, plan.replace('## Implementation Steps', '## Other Steps'));
+  planFailure('SECTION_MISSING');
+  await writeFile(planMD, plan.replace('document_type: plan', 'document_type: analysis'));
+  planFailure('DOCUMENT_MODE');
+  await writeFile(planMD, plan.replace('slug: plan-fixture', 'slug: wrong-slug'));
+  planFailure('SLUG_MISMATCH');
+  await writeFile(planMD, plan + '\nA changed execution requirement.\n');
+  planFailure('HTML_STALE');
+  assert(JSON.parse(helper(['validate', artifacts.plan, '--content-only', '--json']).stdout).content_only);
+  await writeFile(planMD, plan);
+  await rm(planHTML);
+  planFailure('HTML_MISSING');
+  await writeFile(planHTML, planHTMLBytes);
+  for (const status of ['draft', 'superseded']) {
+    await author(planMD, { status });
+    const candidate = inventory(project).artifacts.find(item => item.artifact === artifacts.plan);
+    assert(!candidate.eligible && candidate.reasons.some(reason => reason.toLowerCase().includes(status)));
+  }
+  await author(planMD);
+  const planTask = helper(['add-task', artifacts.plan, '--title', 'Deliver selected plan step']).stdout.trim();
+  await author(planTask, { status: 'todo' });
+  assert.match(await readFile(planTask, 'utf8'), /source: PLAN.md/);
+  await author(planTask, { status: 'todo', source: 'ANALYSIS.md' });
+  planFailure('TASK_SOURCE');
+  await author(planTask, { status: 'todo', source: 'PLAN.md', depends_on: ['999'] });
+  planFailure('DEPENDENCY_MISSING');
+  await author(planTask, { status: 'todo', depends_on: [] });
+  await writeCompanion(root, planMD);
+  assert(inspect(artifacts.plan).ok);
   assert.match(helper(['add-task', artifacts.research, '--title', 'Disallowed research task'], false).stderr, /RESEARCH_TASKS_UNSUPPORTED/);
   const tasks = [];
   for (const [index, status] of ['done', 'wont-do'].entries()) {
@@ -194,7 +230,13 @@ try {
   await writeFile(join(invalid, 'DELIVERY.md'), 'Unsupported extra document.');
   await author(join(artifacts.improve, 'IMPROVEMENT.md'), { status: 'superseded' });
   const listed = inventory(project);
-  assert.equal(listed.artifacts.length, 5);
+  assert.equal(listed.artifacts.length, 6);
+  const planRow = listed.artifacts.find(item => item.artifact === artifacts.plan);
+  assert(planRow.eligible && planRow.validation.ok);
+  assert.equal(planRow.title, 'Plan Fixture');
+  assert.equal(planRow.path, planMD);
+  assert.equal(planRow.html_path, planHTML);
+  assert.equal(planRow.task_counts.todo, 1);
   const row = listed.artifacts.find((item) => item.artifact === artifacts.change);
   assert(row.eligible && row.validation.ok && isAbsolute(row.path));
   assert.equal(row.html_path, join(artifacts.change, 'ANALYSIS.html'));
@@ -246,4 +288,4 @@ try {
 } finally {
   await rm(temporary, { recursive: true, force: true });
 }
-console.log('Validated five skill registrations, shared links, independently installed relocated resources, configuration preservation, and paired artifacts.');
+console.log('Validated six skill registrations, shared links, independently installed relocated resources, configuration preservation, and paired artifacts including plans.');

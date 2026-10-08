@@ -17,7 +17,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ReportError, validateReport } from "../html/contract.ts";
 
-type Mode = "change" | "improve" | "research";
+type Mode = "change" | "plan" | "improve" | "research";
 type Depth = "quick" | "standard" | "deep";
 type JsonMap = Record<string, any>;
 
@@ -73,6 +73,7 @@ const REQUIRED_MARKER = "<!-- REQUIRED:";
 const TOKEN_PATTERN = /\{\{[A-Z0-9_]+\}\}/;
 const MODE_DOCUMENTS = {
   change: { source: "ANALYSIS.md", type: "analysis", template: "analysis.md" },
+  plan: { source: "PLAN.md", type: "plan", template: "plan.md" },
   improve: { source: "IMPROVEMENT.md", type: "improvement", template: "improvement.md" },
   research: { source: "RESEARCH.md", type: "research", template: "research.md" },
 };
@@ -124,7 +125,7 @@ function usage(): string {
     "Analyse artifact tool",
     "",
     "Usage:",
-    "  bun shared/scripts/artifact-tool.ts init --repo <path> --mode <change|improve|research> --name <slug> [--depth <quick|standard|deep>]",
+    "  bun shared/scripts/artifact-tool.ts init --repo <path> --mode <change|plan|improve|research> --name <slug> [--depth <quick|standard|deep>]",
     "  bun shared/scripts/artifact-tool.ts add-task <artifact-dir> --title <title>",
     "  bun shared/scripts/artifact-tool.ts validate <artifact-dir> [--content-only] [--json]",
     "  bun shared/scripts/artifact-tool.ts list --repo <path> [--json]",
@@ -377,7 +378,7 @@ export function canonicalLocation(artifactDirInput: string): {
     }
     throw new ToolError(
       "ARTIFACT_PATH",
-      "Artifact path must be .artifacts/analyse/<change|improve|research>/<slug>.",
+      "Artifact path must be .artifacts/analyse/<change|plan|improve|research>/<slug>.",
       artifactDir,
     );
   }
@@ -755,7 +756,7 @@ async function inventory(options: Map<string, string | true>): Promise<{
       const task_counts = Object.fromEntries([...TASK_STATUSES].map((item) => [item, 0]));
       try {
         const source = await readDocument(sourcePath, repo);
-        title = inspectBody(source.body).title?.replace(/^(?:Analysis|Improvement Audit|Research):\s*/, "") || title;
+        title = inspectBody(source.body).title?.replace(/^(?:Analysis|Plan|Improvement Audit|Research):\s*/, "") || title;
         status = typeof source.metadata.status === "string" ? source.metadata.status : null;
         updated_at = typeof source.metadata.updated_at === "string" ? source.metadata.updated_at : null;
         if (mode !== "research") {
@@ -821,7 +822,7 @@ async function initialize(options: Map<string, string | true>): Promise<string> 
 
   await ensureDirectory(repo);
   if (!MODES.has(modeValue)) {
-    throw new ToolError("MODE_INVALID", "--mode must be change, improve, or research.");
+    throw new ToolError("MODE_INVALID", "--mode must be change, plan, improve, or research.");
   }
   if (!DEPTHS.has(depthValue)) {
     throw new ToolError("DEPTH_INVALID", "--depth must be quick, standard, or deep.");

@@ -34,4 +34,4 @@ produce Markdown/task/sidecar artifacts, or authorize implementation.
 `<plugin-root>` is `../..` relative to this SKILL.md directory. Resolve shared
 resources there, not from cwd. Report depth, HTML path, validation, actual browser
 proof, and consequential limits. Explain artifacts never enter implementation
-inventory; follow-up implementation needs a selected change/improvement contract.
+inventory; follow-up implementation needs a selected plan/change/improvement contract.

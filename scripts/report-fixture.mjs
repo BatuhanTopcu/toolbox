@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 
 // Real renderer output for disposable assertion/evaluation documents.
 export async function writeCompanion(plugin, file) {
-  if (!/\/(ANALYSIS|IMPROVEMENT|RESEARCH)\.md$/.test(file)) return;
+  if (!/\/(ANALYSIS|PLAN|IMPROVEMENT|RESEARCH)\.md$/.test(file)) return;
   const markdown = await readFile(file, 'utf8');
   const body = markdown.replace(/^---\n[\s\S]*?\n---\n/, '');
   const source = join(dirname(file), '.report.tsx');

@@ -1,6 +1,6 @@
 # Human HTML Reports
 
-Use one reader template for all five workflows. `analyse`, `research`, and
+Use one reader template for all six workflows. `analyse`, `plan`, `research`, and
 `improve` produce a main Markdown/HTML pair; `implement` refreshes that selected
 pair; `explain` produces only `.artifacts/explain/<slug>/EXPLANATION.html`.
 Tasks remain Markdown. HTML is presentation, never implementation authority.
@@ -54,6 +54,12 @@ state in the explanation itself when the subject is a codebase.
 Use the supplied public shadcn components; do not add arbitrary dependencies or
 copy company components/styles. Neutral light/dark palettes are fixed. Theme
 choice stays in memory, follows System when selected, and resets on reload.
+
+For plans, use summary for the intended result, context for scope/current state,
+findings for implementation changes and steps, direction for execution order and
+acceptance, limits for risks/open decisions/proof, and sources for locators.
+Preserve consequential scope, prerequisite outputs, acceptance and evidence;
+plan readiness is authoring, not execution approval or delivery.
 
 ## Charts, Diagrams, And SSR
 

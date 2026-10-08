@@ -1,7 +1,7 @@
 # Artifact Lifecycle
 
 Current artifacts use schema version 3 in
-`.artifacts/analyse/<change|improve|research>/<slug>/`. No historical layout is
+`.artifacts/analyse/<change|plan|improve|research>/<slug>/`. No historical layout is
 migrated automatically.
 
 ## Main Document Frontmatter
@@ -26,6 +26,7 @@ updated_at: 2026-01-01T00:00:00.000Z
 | Mode | document_type | Main document |
 | --- | --- | --- |
 | change | analysis | ANALYSIS.md + ANALYSIS.html |
+| plan | plan | PLAN.md + PLAN.html |
 | improve | improvement | IMPROVEMENT.md + IMPROVEMENT.html |
 | research | research | RESEARCH.md + RESEARCH.html |
 
@@ -34,7 +35,7 @@ Follow [HTML reports](html-reports.md) for the public renderer, reader template,
 SSR, freshness checks, and browser verification. Explain lives outside this
 inventory at `.artifacts/explain/<slug>/EXPLANATION.html`, with no MD or tasks.
 
-Optional numbered `tasks/` belong only to change/improve. Empty task directories,
+Optional numbered `tasks/` belong only to change/plan/improve. Empty task directories,
 root README/research logs, task indexes/prompts, and extra delivery files are not
 part of this compact contract. Report unsupported artifacts without deleting or
 converting them.
@@ -60,7 +61,7 @@ artifact only for a different requested intent, not to bypass an invalid input.
 
 ## Review One Task
 
-Confirm schema 3, owning change/improve artifact, ID/filename, and source. Read
+Confirm schema 3, owning change/plan/improve artifact, ID/filename, and source. Read
 the main document and current cited sources. Tighten outcome, context/contracts,
 acceptance, verification, prerequisites, and stop conditions without expanding
 scope. Preserve truthful status/ID, update `updated_at`, and validate the entire
@@ -68,11 +69,14 @@ artifact because dependencies affect other tasks. Rebuild HTML if main MD change
 
 ## Status And Completion
 
-- `draft`: analysis/research authoring is incomplete.
+- `draft`: main-document authoring is incomplete. Plans stay draft while
+  consequential execution decisions are unresolved.
 - `ready`: required content/evidence are authored; this does not mean
   unimplemented or resolve recorded product choices. Only ready structurally
-  valid change/improve artifacts are execution candidates; resolve consequential
-  open decisions before edits. Research is supporting context.
+  valid change/plan/improve artifacts are execution candidates; resolve consequential
+  open decisions before edits. Plan readiness requires a decision-complete
+  selected scope; known proof limits remain explicit and cannot be claimed as
+  verified by the executor. Research is supporting context.
 - `superseded`: historical and no longer authoritative; do not execute it.
 - `todo`: task has not started.
 - `in-progress`: selected task implementation has begun.

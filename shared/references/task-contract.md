@@ -1,7 +1,7 @@
 # Task Contract
 
 Read when task files were explicitly requested, an existing task is reviewed,
-or implementation consumes existing tasks. Tasks exist only for change/improve
+or implementation consumes existing tasks. Tasks exist only for change/plan/improve
 artifacts and must be executable without conversation history.
 
 ## Frontmatter
@@ -21,7 +21,7 @@ updated_at: 2026-01-01T00:00:00.000Z
 ```
 
 - Stable three-digit `id` matches the numbered filename.
-- `source` is ANALYSIS.md or IMPROVEMENT.md in the artifact root.
+- `source` is ANALYSIS.md, PLAN.md, or IMPROVEMENT.md in the artifact root.
 - `status` is `todo`, `in-progress`, `blocked`, `done`, or `wont-do`.
 - `depends_on` contains existing unique task IDs in an acyclic graph. IDs need
   not be earlier filenames; order alone is not a dependency.
@@ -30,7 +30,7 @@ updated_at: 2026-01-01T00:00:00.000Z
 
 ## Body
 
-- **Outcome:** observable end state and the source recommendation/finding.
+- **Outcome:** observable end state and the source recommendation/plan step/finding.
 - **Context And Requirements:** current behavior/evidence, consequential
   decisions, contracts, boundaries, and relevant rejected approaches. Repeat
   the evidence needed for this scope; the main artifact supplies provenance.

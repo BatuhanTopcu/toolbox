@@ -3,7 +3,7 @@ import { lstat, readFile, readdir, realpath } from "node:fs/promises";
 import path from "node:path";
 
 export const SECTION_IDS = ["summary", "context", "findings", "direction", "limits", "sources"] as const;
-export const REPORT_FILES = { change: "ANALYSIS", improve: "IMPROVEMENT", research: "RESEARCH", explain: "EXPLANATION" } as const;
+export const REPORT_FILES = { change: "ANALYSIS", plan: "PLAN", improve: "IMPROVEMENT", research: "RESEARCH", explain: "EXPLANATION" } as const;
 export type ReportKind = keyof typeof REPORT_FILES;
 export type ReportMetadata = {
   schema_version: 3;
