@@ -56,21 +56,25 @@ or `ready` status; ready means authored, not unimplemented.
    tasks just to enable implementation. Read
    [task contract](../../shared/references/task-contract.md) and
    [orchestration](../../shared/references/orchestration.md) when tasks exist.
-4. Before a substantial taskless slice, record selected scope/current slice in
-   the main document's existing `Implementation Verification`. Update actual
-   changes, checks, blockers, and next action at boundaries or before a planned
-   interruption; refresh the reader HTML after final MD updates; keep current slice separate from main authoring status.
-   Follow actual dependencies, implement working end-to-end slices, and run
+4. Follow actual dependencies, implement working end-to-end slices, and run
    repository-supported checks. Missing prerequisite outputs block dependents;
-   a `wont-do` status does not satisfy a required output.
-5. Record truthful task status and `updated_at`. Account for every selected
+   a `wont-do` status does not satisfy a required output. Do not edit the main
+   document, task files, or HTML while implementing.
+5. After the work and checks finish, report results and ask once: "Update the
+   artifact with these results?" Update without asking when the user already
+   requested a record/update or announced a stop to resume in a fresh session;
+   leave the artifact untouched when they declined. On update, record truthful
+   task status and `updated_at`. Account for every selected
    outcome by existing ID or named criterion in `Implementation Verification`:
    implemented, already satisfied, blocked, or remaining, with actual proof or
-   its limit and next required action. Include revisions, actual checks,
+   its limit and next required action. For a planned stop, also record selected
+   scope, current slice, and next action, separate from main authoring status.
+   Include revisions, actual checks,
    deviations, and remaining scope, preserving historical evidence. No new
    tasks, IDs, table, or state files are required. Refresh HTML from final MD,
    validate the pair, and compare reader claims/proof limits. Preserve progress
-   and the last complete HTML if rendering fails; report stale readiness.
+   and the last complete HTML if rendering fails; report stale readiness. A
+   declined update leaves the pair unchanged and valid; say no record was saved.
 
 `<plugin-root>` is `../..` relative to the directory containing this SKILL.md.
 Resolve it from the loaded file's location, not the working directory. The

@@ -121,7 +121,7 @@ Run the agent in the target repository. Analyses are written under `.artifacts/a
 | `plan` | A concise implementation plan grounded in the current repository | `.artifacts/analyse/plan/<slug>/PLAN.md` + `PLAN.html` |
 | `improve` | An evidence-backed repository improvement audit | `.artifacts/analyse/improve/<slug>/IMPROVEMENT.md` + `IMPROVEMENT.html` |
 | `explain` | A readable saved explanation of a topic or codebase | `.artifacts/explain/<slug>/EXPLANATION.html` only |
-| `implement` | Execution of a selected plan, analysis, audit finding, or task | Product changes, MD verification, and refreshed reader HTML |
+| `implement` | Execution of a selected plan, analysis, audit finding, or task | Product changes; MD verification and refreshed HTML only if you accept the closing update question |
 
 A typical Codex workflow is:
 
@@ -139,7 +139,7 @@ Use `analyse` for a durable investigation of a change and its alternatives; use 
 
 If the target is absent from the conversation, invoke `implement` without a target. It lists change, plan, and improvement artifacts with their status and asks which artifact and scope to implement. It does not automatically select the latest artifact or execute every finding. A selected plan directory, `PLAN.md`, exact `PLAN.html`, or optional task is accepted directly, without an analysis conversion.
 
-Analyses, plans, and audits create task files only when requested; research creates none. A document marked `ready` is authored and may already contain completed work. Plans stay draft while material execution decisions remain unresolved. Implementation checks the current repository, records a disposition and actual evidence or proof limit for every selected outcome, and keeps the current slice and next action in the same record so another session can resume.
+Analyses, plans, and audits create task files only when requested; research creates none. A document marked `ready` is authored and may already contain completed work. Plans stay draft while material execution decisions remain unresolved. Implementation checks the current repository and leaves the artifact untouched while it works. When it finishes, it asks once whether to update the artifact; on yes (or when you asked for a record, or announced a stop to resume later) it records a disposition and actual evidence or proof limit for every selected outcome, plus the current slice and next action so another session can resume, then refreshes the HTML.
 
 The `plan` skill obeys the active harness's permissions; it does not switch the host into native Plan mode. In a session that restricts repository writes, it uses the permitted conversational surface and reports the Toolbox pair as unsaved and unvalidated. In a write-capable session, a plan-only request ends after delivery. An explicit “plan then implement” request continues through `implement` after validating the saved pair, within the same authorization and host permissions.
 

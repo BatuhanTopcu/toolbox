@@ -2,7 +2,7 @@
 
 Use one reader template for all six workflows. `analyse`, `plan`, `research`, and
 `improve` produce a main Markdown/HTML pair; `implement` refreshes that selected
-pair; `explain` produces only `.artifacts/explain/<slug>/EXPLANATION.html`.
+pair only in an optional artifact update; `explain` produces only `.artifacts/explain/<slug>/EXPLANATION.html`.
 Tasks remain Markdown. HTML is presentation, never implementation authority.
 
 ## Setup And Trust
@@ -131,7 +131,7 @@ it. Respect reduced motion and basic accessibility.
    is unavailable, report that proof limit rather than claim it passed.
 
 Refresh after reconciliation, task review/addition when main MD changes, and
-every implementation slice boundary/final/planned interruption. Progress writes
+each implementation artifact update. Progress writes
 must remain truthful even when HTML rebuilding fails: report stale HTML, keep MD
 and last complete output, and leave paired readiness invalid. On resume, repair
 only a verified stale/missing presentation from otherwise valid current-schema

@@ -31,8 +31,10 @@ Tasks without an actual dependency can proceed independently only when they do
 not share contracts, lockfiles, generated output, runtime state, or code ownership.
 Choose parallel work from real independence, not a fixed agent count or model.
 
-Update `in-progress` when work starts, `done` only after outcome and verification
-are complete, or `blocked` with a specific reason when a stop condition applies.
+Task status changes belong to the optional artifact update in
+[implementation workflow](implementation-workflow.md): set `done` only after
+outcome and verification are complete, `blocked` with a specific reason when a
+stop condition applies, or `in-progress` for a planned stop mid-task.
 Do not run dependents of missing/blocked outputs. Update `updated_at` and validate
 the whole artifact after metadata or dependency changes.
 

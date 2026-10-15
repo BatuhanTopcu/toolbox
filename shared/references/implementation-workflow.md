@@ -77,9 +77,17 @@ assertion for nontrivial changed logic. Review the resulting behavior
 and diff against acceptance, independently when useful, and verify delegated
 claims against source.
 
-## Progress And Boundaries
+## Artifact Update
 
-Update task status and `updated_at` truthfully. Record selected outcomes and
+Artifact writes are optional because each MD edit and HTML render costs tokens.
+Do not edit the main document, task files, or HTML while implementing. After
+the work and checks finish, report results and ask once whether to update the
+artifact. Update without asking when the user already requested a record/update
+or announced a stop to resume in a fresh session; leave it untouched when they
+declined. A declined update leaves the pair unchanged and valid; say that no
+implementation record was saved, so a later session cannot resume from one.
+
+When updating, set task status and `updated_at` truthfully. Record selected outcomes and
 verification in the main document's `Implementation Verification` section even
 when only some selected outcomes have tasks. Account for every selected outcome
 using existing finding/task IDs or named contract criteria: state implemented,
@@ -88,16 +96,17 @@ and results or the missing proof, reason, and next required action. A combined
 passing check proves only the outcomes it exercises; unavailable required proof
 leaves the outcome unresolved. No new IDs, table, or task files are required.
 
-Before a substantial taskless slice, record selected scope and the current slice
-in that same section. At slice boundaries or before a planned interruption,
-update actual changes, checks, blockers, and the next concrete action. Keep
+For a planned stop, record selected scope, the current slice, actual changes,
+checks, blockers, and the next concrete action in that same section. Keep
 current slice separate from main authoring status. On resume, recheck this record
 against live source and dirty work, preserve unrelated edits, and continue only
 the selected scope; the record is neither completion proof nor new authority.
 
 Preserve original evidence as historical, identify current affected revisions,
-and list deviations/remaining scope. Validate afterward; do not create another
-delivery/index/log/state artifact.
+and list deviations/remaining scope. Refresh HTML from the final MD and validate
+the pair; do not create another delivery/index/log/state artifact.
+
+## Boundaries
 
 Continue authorized work without routine approval between slices. Missing
 target/scope, invalid contract, consequential unresolved design, absent required

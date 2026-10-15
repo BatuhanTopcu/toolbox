@@ -99,15 +99,15 @@ actual evidence/check results or missing proof and next required action. Include
 affected revisions, expected results, limitations, and deviations; update
 `updated_at`. No new schema, IDs, or table format is required.
 
-Before substantial taskless work, record selected scope/current slice there;
-update changes, checks, blockers, and next action at slice boundaries or before
-a planned interruption. Resume rechecks live source and dirty work, preserving
+Write this record only in an optional artifact update: once after implementation
+when the user accepts, or before a planned interruption, with selected scope,
+current slice, changes, checks, blockers, and next action. Resume rechecks live source and dirty work, preserving
 unrelated edits; a record cannot prove completion or expand authorized scope.
 For task work, also maintain the task's status and verification record. Preserve
 original evidence as the pre-change baseline and cite new evidence as current.
 Do not create delivery/index/log/state files. Validate after edits and report the
 remaining work honestly; document readiness alone cannot establish completion.
-Refresh HTML after every slice boundary/final/planned interruption. Preserve MD
+Refresh HTML once per artifact update. Preserve MD
 progress and the last complete HTML on rendering failure; report stale paired
 readiness. A verified stale/missing companion may be repaired from otherwise
 valid schema-3 MD on resume using `validate --content-only` before product edits.
