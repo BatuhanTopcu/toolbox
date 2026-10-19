@@ -96,7 +96,7 @@ export async function buildReport(input: string, output: string, options: { titl
     if (client.outputs.length !== 1 || !client.outputs[0].path.endsWith(".html")) throw new Error("Expected one standalone HTML.");
     await Bun.build({ ...buildOptions, entrypoints: [join(directory, "render.tsx")], target: "bun", outdir: directory });
     const renderedPath = join(directory, "rendered.html");
-    const rendered = Bun.spawnSync([process.execPath, "--no-env-file", join(directory, "render.js"), renderedPath], { cwd: directory, env: { NODE_ENV: "production", TZ: "UTC" }, timeout: 10_000, stdout: "pipe", stderr: "pipe" });
+    const rendered = Bun.spawnSync([process.execPath, "--no-env-file", join(directory, "render.js"), renderedPath], { cwd: directory, env: { NODE_ENV: "production", TZ: "UTC", ...(process.env.BUN_BE_BUN ? { BUN_BE_BUN: process.env.BUN_BE_BUN } : {}) }, timeout: 10_000, stdout: "pipe", stderr: "pipe" });
     if (!rendered.success) throw new Error(`Complete static rendering failed: ${rendered.stderr.toString().slice(-8000)}`);
     if ((await lstat(renderedPath)).size > maximum) throw new Error("Rendered content exceeds 64 MiB.");
     const markup = await readFile(renderedPath, "utf8");

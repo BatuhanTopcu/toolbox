@@ -1,6 +1,6 @@
 {
   "name": "toolbox",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Evidence-backed research, change analysis, implementation plans, improvement audits, HTML explanations, and execution from durable repository artifacts.",
   "private": true,
   "type": "module",

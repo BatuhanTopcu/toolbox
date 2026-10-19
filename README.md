@@ -4,7 +4,7 @@ Research a technical question, analyse a proposed change, plan its implementatio
 
 ## Install from GitHub
 
-Choose your client below. These instructions install from [BatuhanTopcu/toolbox](https://github.com/BatuhanTopcu/toolbox). The current release is **0.0.3**.
+Choose your client below. These instructions install from [BatuhanTopcu/toolbox](https://github.com/BatuhanTopcu/toolbox). The current release is **0.0.4**.
 
 Have your client and Git installed, then install [Bun](https://bun.sh/docs/installation) **1.4.0 or newer** and make it available on the agent's PATH. Bun runs the artifact helper; 1.4.0 is verified. Check it with:
 
@@ -292,7 +292,7 @@ shared/assets/templates/       Main-document, reader, and opt-in task templates
 scripts/                       Native registrations, checks, and evaluations
 ```
 
-Publish the complete package, including hidden manifest directories, shared resources, lockfile, and licenses. Current development version is `0.0.3`; create an immutable version tag when releasing. Bump `plugin.json` for subsequent releases so copied installations can detect updates. Keep entrypoints and shared resources from the same version together.
+Publish the complete package, including hidden manifest directories, shared resources, lockfile, and licenses. Current development version is `0.0.4`; create an immutable version tag when releasing. Bump `plugin.json` for subsequent releases so copied installations can detect updates. Keep entrypoints and shared resources from the same version together.
 
 ## Verification
 
